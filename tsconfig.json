@@ -1,7 +1,15 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
+  "strict": false,
+  "preferRelative": true,
   "compilerOptions": {
+    "ignoreDeprecations": "5.0",
+
+    // disable 'use strict'
+    "alwaysStrict": false,
+    "noImplicitUseStrict": true,
+
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
@@ -19,7 +27,8 @@
     "target": "es2022",
     "module": "es2020",
     "lib": ["es2018", "dom"],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

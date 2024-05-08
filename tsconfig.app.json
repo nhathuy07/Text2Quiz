@@ -3,7 +3,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": ["gapi.drive", "gapi.auth2"]
   },
   "files": [
     "src/main.ts",

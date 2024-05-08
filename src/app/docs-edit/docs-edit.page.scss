@@ -1,0 +1,84 @@
+.card-margin {
+    margin-left: 18px;
+    margin-right: 18px;
+    margin-top: 22px;
+    padding: 8px
+}
+
+.editable-title {
+    margin-left: 18px;
+    margin-right: 18px;
+    margin-top: 5px;
+    padding: 8px
+}
+
+ion-input.input-fill-outline.sc-ion-input-md-h {
+    min-height: 40px;
+}
+
+ion-input.input-fill-solid.sc-ion-input-md-h {
+    --background: white;
+    --border-color: #a9a9a9;
+    min-height: 40px;
+}
+
+.input-fill-solid.sc-ion-input-md-h {
+    --padding-start: 0px
+}
+
+.rtebtn {
+    box-shadow: none; padding: 10px;
+    width:33px;
+    height: 33px;
+} 
+
+.rtebtn[activated="true"]{
+    background-color: #514cb1;
+}
+
+.rtedropdown {
+    width: 100px;
+    color: white;
+}
+
+
+
+@media (prefers-color-scheme: light) {
+    .rtedropdown {
+        color:black
+    }
+    .rtedropdown > * {
+
+        color: black;
+    }
+}
+
+
+@media only screen and (min-width: 460px) {
+    .rbreak {
+      display: none;
+    }
+  }
+
+ion-select.select-fill-outline {
+    min-height: 42px;
+}
+
+.foreground {
+
+    // https://stackoverflow.com/questions/17976995/how-to-center-absolute-div-horizontally-using-css
+    background-color: transparent;
+    z-index: 10;
+
+    left:0;
+    right:0;
+  
+    margin-left: auto;
+    margin-right: auto;
+  
+    position: absolute;
+    width: 100%;
+    max-width: 800px;
+
+
+}

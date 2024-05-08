@@ -1,0 +1,125 @@
+
+
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-input id="name_input" [(ngModel)]="note_name" autocapitalize="on" class="input-height" style="font-weight: bold;" fill="solid" placeholder="Give your note a title..."></ion-input>
+
+    <ion-buttons slot="end">
+      <ion-button  (click)="uploadOrUpdateNote()"> <ion-icon name="save-outline"></ion-icon> </ion-button>
+    </ion-buttons>
+
+    <ion-buttons slot="start">
+      <ion-button (click)="exitEditPage()"> <ion-icon name="chevron-back-outline"></ion-icon> </ion-button>
+    </ion-buttons>
+  
+  </ion-toolbar>
+</ion-header>
+
+
+
+<ion-content [fullscreen]="true">
+  <div class="foreground">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{note_name}}</ion-title>
+    </ion-toolbar>
+    
+    
+  </ion-header>
+  <div style="display: flex; flex-direction: column; height: 90vh;">
+      <ion-card style="box-shadow: none; padding: 0px; padding-top: 5px;">
+        <ion-card-content style="padding: 0px;">
+        
+      
+        <!-- <ion-input #subjectField [(ngModel)]="note_subject" fill="outline" placeholder="Subject..."></ion-input> -->
+        
+        <!-- Subject chooser -->
+        <ion-select (ionChange)="setTextSubject($event)" label-placement="floating" size="small" [(ngModel)]="note_subject" label=" " justify="start" fill="outline" interface="popover" label="Subject">
+          <ion-select-option *ngFor="let subject of availableSubjects" [value]="subject">{{subject}}</ion-select-option>
+          <ion-select-option>
+            <ion-icon name="add"></ion-icon>
+            <strong>Add...</strong>
+          </ion-select-option>
+        </ion-select>
+
+        </ion-card-content>
+      </ion-card>
+      
+      <!-- Rich text editor (unstable on mobile for now) -->
+      <!-- On mobile, bold/italic/underline don't work unless some text is selected -->
+      <div #rtetoolbar style="margin-left: 5px; width: 100%" (click)="RTEUpdateToggle()">
+        &nbsp;
+        <span style="margin-bottom: 4px;">
+          <button (click)="RTECommand('bold', $event)" activated="false" class="rtebtn" id="bold"><strong (click)="RTEPrevDefault($event)">B</strong></button>
+          <button (click)="RTECommand('italic', $event)" activated="false" class="rtebtn" id="italic">&nbsp;<em>I</em></button>
+          <button (click)="RTECommand('underline', $event)" activated="false" class="rtebtn" id="underline"><u>U</u></button>
+          <button (click)="RTEBlockFormatting('h1',$event)" activated="false" class="rtebtn" id="h1" style="width: 35px;">
+            H<sub>1</sub>
+          </button>
+          <button (click)="RTEBlockFormatting('h2',$event)" activated="false" class="rtebtn" id="h2" style="width: 37px;">
+            H<sub>2</sub>
+          </button>
+        </span>
+        &nbsp;
+        <span>
+          <button #highlight (click)="RTEHighlightToggle($event)" activated="false" class="rtebtn" style="max-width: 100px; min-width: 100px;">
+            Highlight
+          </button>
+        </span>
+
+        <br class="rbreak"/>
+        &nbsp;
+        <span>
+          <button (click)="RTECommand('insertOrderedList', $event)" activated="false" id="insertOrderedList" class="rtebtn" style="width: 37px ; padding-top: 12px;">
+            12
+          </button>
+          <button (click)="RTECommand('insertUnorderedList', $event)" activated="false" id="insertUnorderedList" class="rtebtn">
+            <ion-icon font-size="32px" name="list-outline"></ion-icon>
+          </button>
+          <button (click)="RTEInsertCheckbox($event)" activated="false" id="ul" class="rtebtn">
+            <ion-icon name="checkbox-outline"></ion-icon>
+          </button>
+          &nbsp;
+
+          <!-- Hidden file input button, substituted by a button -->
+          <input (change)="RTEHandleFileUpload($event)" #inputfile type="file" style="width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; position: absolute; z-index: -1;"/>
+          
+          <!-- This btn will be linked to the hidden file button -->
+          <button id="attachFile" class="rtebtn">
+            <ion-icon name="document-attach-outline"></ion-icon>
+          </button>
+
+          <ion-popover #fileChooserOptions trigger="attachFile" triggerAction="click">
+            
+            <ng-template>
+              <ion-label style="padding: 10px;">Insert...</ion-label>
+              <ion-button style="--box-shadow:none" (click)="RTEOpenFileDialog('OCR')">OCR scans</ion-button>
+              <ion-button style="--box-shadow:none" (click)="RTEOpenFileDialog('Insert')">Document(s)</ion-button>
+              <ion-button style="--box-shadow:none" (click)="RTEOpenFileDialog('Transcript')">Voice transcript(s)</ion-button>
+
+            </ng-template>
+          </ion-popover>
+          
+        </span>
+
+      </div>
+
+        <!-- The RTE itself -->
+        <div (touchend)="RTEHighlight()" (mouseup) = "RTEHighlight()" (click)="RTEUpdateEditor()" #rte autofocus contenteditable tappable id="rte" style="flex-grow: 1; max-height: calc(100% - 200px ); border-radius: 5px; border-width: 1px; border-color: #a5a5a5; border-style: solid;  margin: 10px; margin-top:0px; padding:5px; outline-width: 2px; outline-color: #a7a7a7; overflow-y: scroll;">
+        </div>
+
+        <!-- Highlighted keywords -->
+        
+        <ion-card style="box-shadow: none;">
+          <ion-card-subtitle>Keywords:</ion-card-subtitle>
+          <ion-text style="font-weight: bold; color: rgb(115, 108, 253); max-height: 42px; overflow-y: scroll;">{{returnSerializedKeywords()}}</ion-text>
+        </ion-card>
+
+
+      </div>
+
+  </div>
+
+</ion-content>
+
+
