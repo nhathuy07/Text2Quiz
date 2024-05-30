@@ -26,7 +26,28 @@ ion-input.input-fill-solid.sc-ion-input-md-h {
     --padding-start: 0px
 }
 
+.special[activated="false"] {
+    font-weight: bold;
+	background: -webkit-linear-gradient( #4d1cca, #2f7ff0);
+	-webkit-background-clip: text;
+    background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.special[activated="true"] {
+    font-weight: bold;
+	background: -webkit-linear-gradient( #4d1cca, #2f7ff0);
+    color: white;
+    ion-icon {
+        stroke: white;
+    }
+}
+
+
+
 .rtebtn {
+    background-color: transparent;
+    color: #4e4e4e;
     box-shadow: none; padding: 10px;
     width:33px;
     height: 33px;
@@ -34,6 +55,7 @@ ion-input.input-fill-solid.sc-ion-input-md-h {
 
 .rtebtn[activated="true"]{
     background-color: #514cb1;
+    color: white
 }
 
 .rtedropdown {
@@ -41,7 +63,12 @@ ion-input.input-fill-solid.sc-ion-input-md-h {
     color: white;
 }
 
-
+ion-button{
+    span{
+      text-align:left;
+      width:100%;
+    }
+  }
 
 @media (prefers-color-scheme: light) {
     .rtedropdown {
@@ -55,10 +82,25 @@ ion-input.input-fill-solid.sc-ion-input-md-h {
 
 
 @media only screen and (min-width: 460px) {
+
+  }
+
+@media only screen and (min-width:495px) {
+    .span-right-desktop {
+        float: right;
+    }
     .rbreak {
-      display: none;
+        display: none;
+      }
+  
+}
+
+  @media only screen and (max-width: 495px) {
+    .span-right-desktop {
+        float: left;
     }
   }
+
 
 ion-select.select-fill-outline {
     min-height: 42px;

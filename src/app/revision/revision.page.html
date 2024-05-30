@@ -1,26 +1,158 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button class="ion-no-padding" > <ion-icon name="chevron-back-outline"></ion-icon> </ion-button>
+      <ion-button (click)="backToDashboard()" class="ion-no-padding" > <ion-icon name="chevron-back-outline"></ion-icon> </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button class="ion-no-padding"> <ion-icon name="help-buoy-outline"></ion-icon> </ion-button>
     </ion-buttons>
-    <ion-title class="ion-no-padding">#/#</ion-title>
-    <ion-progress-bar color="success" value="0.22"></ion-progress-bar>
+    <ion-title class="ion-no-padding">{{cur_state.id + 1}}/{{questions.length}}</ion-title>
+    <ion-progress-bar *ngIf="finished_loading" [color]="prog_bar_color" [value]="this.revision_progress"></ion-progress-bar>
     
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-card style="padding: 10px; margin: 10px;">
+  <div class="foreground" class="center-max-800" *ngIf="finished_loading">
+
+    <ion-card style="padding: 10px; margin: 10px;" >
     
-    <img class="img-width-350 img-center" src="https://hatinh.gov.vn/uploads/topics/16461006518131.jpg"/>
-    <ion-card-subtitle style="padding-left: 10px; padding-top: 10px;">Choose the best answer</ion-card-subtitle>
-    <ion-card-title style="padding: 10px;">This is a sample question</ion-card-title>
-    <ion-card-content style="padding: 10px;">
-      <ion-button expand="block">Option 1</ion-button>
-    </ion-card-content>
-  </ion-card>
+      <img class="img-width-350 img-center"/>
+      <ion-card-subtitle style="padding-left: 10px; padding-top: 10px;">Choose the best answer</ion-card-subtitle>
+      <ion-card-title style="padding: 10px;">{{get_current_prompt()}}</ion-card-title>
+      <div [ngSwitch]="get_question_type()">
+  
+        <!-- Multiple choice questions -->
+        <ion-card-content style="padding: 10px;" *ngSwitchCase="'MCQ'">
+          <ion-button expand="block" *ngFor="let opt of __mcq_get_possible_opts()" (click)="set_user_response([opt])">{{opt}}</ion-button>
+        </ion-card-content>
+  
+        <!-- Choose all correct statements -->
+        <ion-card-content style="padding: 10px; " *ngSwitchCase="'MULT'">
+          <ion-list style="max-height: calc(100%-40px); overflow-y: scroll;">
+            <ion-item *ngFor="let opt of __mult_ret; trackBy:__track_items">
+              <ion-checkbox class="ion-text-wrap" [(ngModel)]="opt.checked" expand="block"><span style="white-space: normal;">{{opt.stmt}}</span></ion-checkbox>
+            </ion-item>
+          </ion-list>
+  
+          <ion-button (click)="__mult_check_result()" expand="block" shape="round">Submit!</ion-button>
+        </ion-card-content>
+
+        <!-- Arrange statement in correct order -->
+        <ion-card-content style="padding: 10px" *ngSwitchCase="'ARRANGE'">
+          <ion-reorder-group style="max-height: calc(100%-40px); overflow-y: scroll;" (ionItemReorder)="__arrange_set_response($any($event))" [disabled]="false">
+
+            <ion-item *ngFor="let opt of __arrange_ret">
+              <ion-label>{{opt}}</ion-label>
+              <ion-reorder slot="end"></ion-reorder>
+            </ion-item>
+
+          </ion-reorder-group>
+
+          <ion-button (click)="__arrange_check_result()" expand="block" shape="round">Submit!</ion-button>
+
+        </ion-card-content>
+
+        <!-- Open-ended question -->
+        <ion-card-content style="padding: 10px; max-height: calc(100%-50px); overflow-y: scroll;" *ngSwitchCase="'OPEN'">
+          <ion-input [(ngModel)]="cur_state.response[i]" *ngFor="let o of cur_state.response; let i = index; trackBy:__track_items" fill="outline" placeholder="Enter your answer..."></ion-input>
+          <ion-button expand="block" shape="round" (click)="check_response()">Submit!</ion-button>
+        
+        </ion-card-content>
+
+        <!-- TODO: Amendment question type -->
+        <ion-card-content style="padding: 10px;" *ngSwitchCase="'AMEND'">
+          <ion-textarea fill="outline" [autoGrow]="true" [(ngModel)]="cur_state.response[0]"></ion-textarea>
+          <ion-button expand="block" shape="round" (click)="check_response()">Submit!</ion-button>
+        </ion-card-content>
+        
+      </div>
+
+      <!-- Flip to next question button -->
+      <div style="display: flex; float: left;">
+        <ion-button fill="clear" (click)="prev_q()"> <ion-icon slot="start" name="arrow-back-outline"></ion-icon> Previous</ion-button>
+      </div>
+
+      <div style="display: flex; float: right; ">
+        <ion-button fill="clear" (click)="next_q()"><ion-icon slot="end" name="arrow-forward-outline"></ion-icon> Next</ion-button>
+      </div>
+    </ion-card>
+  </div>
+  
+  <!-- TODO: Add a score report ion-modal to show after finishing all questions -->
+  <ion-modal #revisionSummary [isOpen]="revision_finished" (didDismiss)="__dismiss_revision_summary()" >
+    <ng-template>
+      <ion-card-subtitle style="width: 100%; text-align: center; padding-top: 25px;">
+        {{__get_complement()}}
+      </ion-card-subtitle>
+
+      <ion-card-title style="text-align: center; font-size:xx-large;">
+        <ion-label>
+          <strong style="font-size: 48px;">{{__get_serialized_percentage()}}</strong><em style="font-style: normal; font-size: large; color: grey;" >&MediumSpace;/{{this.summary.total}}</em>
+        </ion-label>
+        
+      </ion-card-title>
+
+      <span style="align-self: center;">
+        <ion-chip color="medium">
+          <strong>{{this.summary.total}}&MediumSpace;</strong>total
+        </ion-chip>
+
+        <ion-chip color="success">
+
+            <ion-icon name="checkmark-circle"></ion-icon>
+
+          <strong>{{this.summary.correct}}&MediumSpace;</strong>({{this.summary.retried}} re-attempted)
+        </ion-chip>
+
+        <ion-chip color="danger">
+          <ion-icon name="alert-circle"></ion-icon>
+          <strong>{{this.summary.total - this.summary.correct}}</strong>
+        </ion-chip>
+
+      </span>
+
+
+      <ion-card-title>
+
+      </ion-card-title>
+
+      <ion-card *ngIf="summary.weak_points.length > 0" style="box-shadow: none; background-color: #ffc7c7; white-space: nowrap; min-height: 80px; max-height: 110px; overflow-x: scroll; padding: 12px">
+        <ion-card-subtitle>Weak points</ion-card-subtitle>
+        <ion-card-content style="padding: 0px;">
+          <ion-chip color="danger" class="ion-padding" style="font-size: small; color: #a10000; min-width: fit-content; padding-top: 0px; padding-bottom: 0px;" *ngFor="let w of summary.weak_points; index as i" (click)="__show_paragraph_detail(i)">{{w}}</ion-chip>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card *ngIf="summary.weak_points.length == 0" style="box-shadow: none; background-color: #e5faed; white-space: nowrap; min-height: 50px; max-height: 50px; overflow-x: scroll; padding: 12px">
+        <ion-card-subtitle style="color: #06a154;">No considerable weak points found!</ion-card-subtitle>
+      </ion-card>
+
+      <ion-card style="padding-top: 0px; height: calc(100% - 40px); overflow-y: scroll; box-shadow: none; height: 100%;">
+
+        <ion-card-content style="padding-left: 0px; padding-top: 0px;" >
+          <ion-list >
+            <ion-item style="flex-direction: column;" *ngFor="let q of q_states">
+                <ion-icon *ngIf="q.correct==true&&q.tried_again==false" style="color: #00cc67; margin-left: 0px; margin-right: 16px;" slot="start" name="checkmark-circle"></ion-icon>
+                <ion-icon *ngIf="q.correct==true&&q.tried_again==true" style="color: #cc9e00; margin-left: 0px; margin-right: 16px;" slot="start" name="checkmark-circle"></ion-icon>
+                <ion-icon *ngIf="q.correct==false||q.correct==null" style="color:#cc0000; margin-left: 0px; margin-right: 16px;" slot="start" name="alert-circle"></ion-icon>
+                <!-- <ion-icon *ngIf="q.correct==null" style="color: #b9b9b9; margin-left: 0px; margin-right: 16px;" slot="start" name="remove-circle"></ion-icon> -->
+                <ion-label class="ion-no-padding">
+                  <h2>{{questions[q.id].prompt}}</h2>
+                  <p style="color: #606cff; font-style: italic;">A. {{ try_get_serialized_array(questions[q.id].keys)}}</p>
+                </ion-label>
+
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+
+      </ion-card>
+
+      <ion-button shape="round" style="margin-left: 10px; margin-right: 10px;" (click)="__log_result_and_exit()" expand="block">Review weak points</ion-button>
+      <ion-button shape="round" style="margin-left: 10px; margin-right: 10px;"  (click)="__log_result_and_retry()" expand="block" fill="outline">Finish!</ion-button>
+
+    </ng-template>
+  </ion-modal>
+
 
 </ion-content>

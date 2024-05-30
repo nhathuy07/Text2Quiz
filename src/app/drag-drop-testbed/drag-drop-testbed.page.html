@@ -1,0 +1,18 @@
+<ion-header [translucent]="true">
+  <ion-toolbar></ion-toolbar>
+</ion-header>
+
+<ion-content [scrollY]="acceptScroll" [fullscreen]="true">
+  <div slot="fixed"  style="user-select: none;  background-color: #fff ; z-index: 0; padding: 10px; width: 100%;">
+    <div #dropzoneA style="border-radius: 10px; border: dotted #674ac9 2px; user-select: none; width: 100%; " class="ion-padding">
+      <ion-title style="color: black;">Dropzone A</ion-title>
+    </div>
+  </div>
+
+  <div #itemFrame style="user-select: none; margin-top: 120px; z-index: 2;">
+      <ion-item style="z-index: inherit;" class="unsortedItems" *ngFor="let r of myArray">Item {{r}}</ion-item>
+
+  </div>  
+  <!-- </ion-content> -->
+  
+</ion-content>

@@ -5,33 +5,47 @@
     </ion-toolbar>
   </ion-header>
 
-  <div class="background">
-
-  </div>
+  <div class="background"></div>
+  <div class="white-fade"></div>
 
   <div class="foreground">
-    <ion-card style="background: transparent; box-shadow: none;">
+    <ion-card style="background: transparent; box-shadow: none; ">
       <ion-card-title class="white-text text-shadow text-title">Greetings, <strong>{{username}}!</strong></ion-card-title>
     </ion-card>
 
-    <ion-card class="card-margin card-padding">
+    <!-- Goal tracker board -->
+    <ion-card class="card-margin card-padding" style="height: 140px;">
       <ion-card-subtitle>Get motivated!</ion-card-subtitle>
-      <ion-card-content [ngSwitch]="hasStudyGoal">
+      <ion-card-content [ngSwitch]="hasStudyGoal" style="padding-left: 0px;">
         <ion-list *ngSwitchCase=true>
 
         </ion-list>
-
-        <ion-card-title style="font-size: large;" *ngSwitchCase=false>Tap here to set your first <strong>study plan!</strong></ion-card-title>
+        
+        <ion-grid (click)="navigateToGoalSetter()"  *ngSwitchCase="false">
+          <ion-row>
+          <ion-col size="auto" class="ion-align-self-center">
+            <!-- <ion-icon style="font-size: 64px;"  src="../../assets/icon/bullseye.svg"></ion-icon> -->
+            <img style="width: 60px;" src="../../assets/icon/bullseye.webp" />
+          </ion-col>
+          <ion-col style="flex-grow: 1; margin-left: 5px;" class="ion-align-self-center">
+            <ion-card-title style="font-size: large;">Tap here to set your first <strong>study plan!</strong></ion-card-title>
+          </ion-col>
+        </ion-row>
+        </ion-grid>
+        
       
       </ion-card-content>
     </ion-card>
 
     <ion-card class="card-margin card-padding">
-      <ion-card-subtitle>Your notes</ion-card-subtitle>
-      <ion-card-content style="flex-grow: 1;  min-height: 300px;">
-          <ion-row style="display: flex; flex-wrap: nowrap; overflow-x: auto;">
-            <ion-chip style="margin-left: 0px; white-space: nowrap; min-width: 110px;">⭐In focus</ion-chip>
-            <ion-chip style="white-space: nowrap; min-width: 50px;" *ngFor="let s of userSubjects">{{s}}</ion-chip>
+      <ion-card-title style="padding: 8px;">Study materials</ion-card-title>
+      <ion-card-content style="flex-grow: 1;  min-height: 300px; padding-left: 8px; padding-right: 8px;">
+
+          <ion-row style="display: flex; flex-wrap: nowrap; overflow-x: scroll;">
+            <ion-chip [outline]="true" class="special-yellow" style="border-color: #cc9610; border-width: 2px; color: #cc9610; font-weight: bold; margin-left: 0px; white-space: nowrap; min-width: 110px;">⭐ Focused</ion-chip>
+            
+            <ion-chip [outline]="!(currentFilter=='*')" (click)="updateSubjectFilter('*')" style="white-space: nowrap; min-width:fit-content;">All</ion-chip>
+            <ion-chip [outline]="!(currentFilter==s)" (click)="updateSubjectFilter(s)" style="white-space: nowrap; min-width:fit-content;" *ngFor="let s of userSubjects">{{s}}</ion-chip>
           </ion-row>
           
           <ion-list style="flex-grow:1; overflow-y: scroll; " class="ion-no-padding" lines="inset">
@@ -40,7 +54,7 @@
                     <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
                   </ion-thumbnail> -->
                   <ion-card-title><h2>{{note.name}}</h2></ion-card-title>
-                  <ion-chip size="small" style="min-width: 48px;"><h3>60%</h3></ion-chip>
+                  <ion-chip slot="end" size="small" style="min-width: 48px; font-size: small; "><h3>{{note.last_percentage ? note.last_percentage : '--%'}}</h3></ion-chip>
   
             </ion-item>
           </ion-list>
@@ -57,8 +71,9 @@
     </ion-fab>
 
     <!-- Note Viewer Modal -->
-    <ion-modal (willDismiss)="noteViewerModalOpen=false" #noteViewerModal [isOpen]="noteViewerModalOpen">
+    <ion-modal style="--min-height: 650px" (willDismiss)="dismissNoteViewerModal()" #noteViewerModal [isOpen]="noteViewerModalOpen">
       <ng-template>
+
         <ion-header style="box-shadow: none;">
           <!-- Note Viewer title bar-->
           <ion-toolbar>
@@ -73,13 +88,13 @@
         </ion-header>
 
         <!-- Keyword card -->
-        <ion-card class='ion-padding' style="white-space: nowrap; min-height: 80px; max-height: 120px; overflow-x: auto;">
-          <ion-card-subtitle>Keywords <strong style="color: #606cff">(view flashcards)</strong></ion-card-subtitle>
+        <ion-card *ngIf="!isRevisionOptionsShown" class='ion-padding' style="white-space: nowrap; min-height: 80px; max-height: 120px; overflow-x: scroll;">
+          <ion-card-subtitle>Keywords</ion-card-subtitle>
           <ion-chip color="primary" *ngFor="let w of currentNoteContent.keywords" >{{w}}</ion-chip>
         </ion-card>
 
         <!-- Content card -->
-        <ion-card class="ion-padding" style="overflow-y: auto;">
+        <ion-card *ngIf="!isRevisionOptionsShown" class="ion-padding" style="overflow-y: auto;">
           <ion-row>
             <ion-card-subtitle class="ion-align-self-start">
               Content
@@ -93,18 +108,56 @@
         </ion-card>
 
         <!-- Revision options menu -->
-        <ion-grid style="margin: 0px; padding-top: 0px">
+        <ion-grid *ngIf="!isRevisionOptionsShown" style="margin: 0px; padding-top: 0px">
           <ion-row>
             <ion-col>
-              <ion-button expand="block" class="ion-no-padding">Revise suggested parts</ion-button>
-            </ion-col>
-            <ion-col>
-              <ion-button expand="block" fill="outline" class="ion-no-padding">Take full revision</ion-button>
+              <ion-button expand="block" class="ion-no-padding" (click)="toggleRevisionOptions(true)"> <ion-icon slot="start" name="sparkles"></ion-icon> Start revision</ion-button>
             </ion-col>
             
           </ion-row>
         </ion-grid>
 
+        <!-- Revision Options -->
+        <ion-card *ngIf="isRevisionOptionsShown" #revisionOptions style="box-shadow: none; height: 100%;">
+          <ion-card-title style="text-align: center; padding-top: 30px;">
+            How do you want to revise?
+          </ion-card-title>
+          <ion-card-content style="padding-left: 0px;">
+            <ion-card (click)="initRevisionProcess(false,false)" class="ion-activatable ripple-parent rounded-rectangle" style="width: 100%;">
+              
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-card-content>
+                <ion-label>
+                  <h2 class="special"><b>Factual questions</b></h2>
+                  <p>Practise with questions directly related to the given material.</p>
+                </ion-label>
+              </ion-card-content>
+            </ion-card>
+
+            <ion-list>
+
+              
+              <ion-item button (click)="initRevisionProcess(true,false)">
+                <ion-label>
+                  <h2>Inferred questions</h2>
+                  <p>Freely think beyond the scope of the material (ungraded)</p>
+                </ion-label>
+              </ion-item>
+              <ion-item button (click)="initFlashcardView()">
+                <ion-label>
+                  <h2>Flashcards</h2>
+                  <p>Familiarize yourself with key terms</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+
+            <ion-select value="Vietnamese" label="Generate quiz in:" (ionChange)="changeInferenceLang($event)" interface="popover" placeholder="Language..." style="padding-left: 16px;">
+              <ion-select-option value="Vietnamese">Tiếng Việt</ion-select-option>
+              <ion-select-option value="English">English</ion-select-option>
+            </ion-select>
+          </ion-card-content>
+
+        </ion-card>
 
         <!-- Note Options popover -->
         <ion-popover (didDismiss)="toggleNoteOptions(false)" (click)="toggleNoteOptions(false)" #noteOptionsPopover [isOpen]="isPopoverOpen">
@@ -114,8 +167,6 @@
           </ng-template>
         </ion-popover>
 
-        <ion-content class="ion-padding">
-        </ion-content>
       </ng-template>
       
     </ion-modal>

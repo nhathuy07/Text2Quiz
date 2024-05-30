@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonPopover, IonButtons, IonModal, IonThumbnail, LoadingController, IonGrid, IonRow, IonCol, IonChip, IonItem, IonIcon, IonFabButton, IonFab, IonButton, IonLabel, IonCardSubtitle, IonCard, IonCardTitle, IonList, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonSelect, IonSelectOption, IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, LoadingController, IonGrid, IonRow, IonCol, IonChip, IonItem, IonIcon, IonFabButton, IonFab, IonButton, IonLabel, IonCardSubtitle, IonCard, IonCardTitle, IonList, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
-import { CapacitorHttp } from '@capacitor/core';
-import { GetResult, Preferences } from '@capacitor/preferences';
+import { Preferences } from '@capacitor/preferences';
 import { addIcons } from 'ionicons';
 
 import { Router } from '@angular/router';
@@ -19,7 +18,7 @@ import { ElementRef, ViewChild } from '@angular/core';
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
-  imports: [IonPopover, IonButtons, IonModal, IonThumbnail, IonGrid, IonRow, IonCol, IonChip, IonItem , IonFabButton, IonFab, IonIcon, IonButton, IonLabel, IonCardContent,  IonCardSubtitle, IonCard, IonList, IonCardTitle, IonCard, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonSelect, IonSelectOption,  IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, IonGrid, IonRow, IonCol, IonChip, IonItem , IonFabButton, IonFab, IonIcon, IonButton, IonLabel, IonCardContent,  IonCardSubtitle, IonCard, IonList, IonCardTitle, IonCard, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class DashboardPage implements OnInit {
 
@@ -28,6 +27,8 @@ export class DashboardPage implements OnInit {
 
   // @ts-ignore
   @ViewChild("noteOptionsPopover") noteOptionsPopover: HTMLIonPopoverElement;
+  // @ts-ignore
+  @ViewChild("noteViewerModal") noteViewerModal: HTMLIonPopoverElement;
 
   public username: string = "debug_user"
   public hasStudyGoal: boolean = false;
@@ -37,6 +38,12 @@ export class DashboardPage implements OnInit {
   public noteViewerModalOpen: boolean =false;
 
   public isPopoverOpen: boolean = false;
+
+  public isRevisionOptionsShown: boolean = false;
+
+  public currentFilter: string = "*";
+
+  public inferLang: string = "Vietnamese";
 
   public currentNote: UserNoteMetadata= {
     name: '',
@@ -62,7 +69,8 @@ export class DashboardPage implements OnInit {
     // Show loading throbber while app loads data
     const loading = await this.loading_throbber.create({
         message: 'Please wait...',
-        translucent: true
+        translucent: true,
+        
     });
     await loading.present();
     return loading;
@@ -83,6 +91,21 @@ export class DashboardPage implements OnInit {
   }
 
   async loadNoteInViewerModal(_note: UserNoteMetadata) {
+    const loading = await this.presentLoading()
+  
+    try {
+      await this.__loadNoteContent(_note)
+    } catch (e) {
+      console.error(e) 
+    } finally {
+      loading.dismiss()
+    }
+
+  }
+
+  async __loadNoteContent(_note: UserNoteMetadata) {
+    this.currentNoteContent.keywords?.clear()
+
     this.noteViewerModalOpen = true
     this.currentNote = _note;
 
@@ -90,17 +113,31 @@ export class DashboardPage implements OnInit {
 
     // inject text html to rich-text-viewer div
     this.rtviewer.nativeElement.innerHTML = this.currentNoteContent.content;
-
   }
 
   async pageInit() {
     this.noteList = await this.userResource.filterNotesBySubject("*")
     this.userSubjects = await this.userResource.getSubjectFilters()
+    this.inferLang = "Vietnamese"
   }
 
   async fetch_access_key(): Promise<String | null> {
     let _x = await Preferences.get({key: "oauth_token"})
     return _x.value;
+  }
+
+  async updateSubjectFilter(s: string) {
+    this.currentFilter = s
+    const loading = await this.presentLoading()
+
+    try {
+      this.noteList = await this.userResource.filterNotesBySubject(s)
+    } catch (e) {
+      alert(`Error caught while loading resource: ${e}`)
+    } finally {
+      loading.dismiss()
+    }
+
   }
 
   create_note() {
@@ -120,6 +157,7 @@ export class DashboardPage implements OnInit {
 
   dismissNoteViewerModal() {
     this.noteViewerModalOpen = false
+    this.isRevisionOptionsShown = false
   }
 
   toggleNoteOptions(show?:boolean) {
@@ -145,6 +183,50 @@ export class DashboardPage implements OnInit {
       
     }
     
+  }
+
+  public navigateToGoalSetter() {
+    this.rt.navigate(['goal-setter'])
+  }
+
+  public toggleRevisionOptions(show:boolean) {
+    this.isRevisionOptionsShown = show
+  }
+
+  async changeInferenceLang(event: any) {
+    this.inferLang = event.detail.value
+  }
+
+  async initFlashcardView() {
+    // alert(this.currentNoteContent.keywords?.size)
+    this.dismissNoteViewerModal()
+    console.log(this.currentNoteContent.keywords)
+    let id = await this.userResource.writeServerTempFile(this.currentNoteContent.content, "none", this.currentNoteContent.keywords)
+
+    setTimeout(
+      () => {this.rt.navigate(['flashcards', id, this.inferLang])},
+      30
+    )
+    
+  }
+
+  async initRevisionProcess(inferred?:boolean, weak_points_only?:boolean) {
+    
+    if (!weak_points_only) {
+      let id = await this.userResource.writeServerTempFile(this.currentNoteContent.content, this.currentNote.name, this.currentNoteContent.keywords)
+
+
+      this.isPopoverOpen = false
+      this.noteViewerModal.dismiss()
+    
+      setTimeout(() => {
+        this.rt.navigate(['revision', id, inferred, this.inferLang])
+      }, 30)
+    } else {
+      alert('feature coming soon!')
+    }
+
+
   }
 
 }

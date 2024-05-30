@@ -30,7 +30,19 @@ export const routes: Routes = [
     loadComponent: () => import('./docs-edit/docs-edit.page').then( m => m.DocsEditPage)
   },
   {
-    path: 'revision',
+    path: 'revision/:id/:inferred/:lang',
     loadComponent: () => import('./revision/revision.page').then( m => m.RevisionPage)
+  },
+  {
+    path: 'goal-setter',
+    loadComponent: () => import('./goal-setter/goal-setter.page').then( m => m.GoalSetterPage)
+  },
+  {
+    path: 'drag-drop-testbed',
+    loadComponent: () => import('./drag-drop-testbed/drag-drop-testbed.page').then( m => m.DragDropTestbedPage)
+  },
+  {
+    path: 'flashcards/:id/:lang',
+    loadComponent: () => import('./flashcards/flashcards.page').then( m => m.FlashcardsPage)
   },
 ];

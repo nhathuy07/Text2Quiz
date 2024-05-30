@@ -8,3 +8,22 @@
 .img-width-350 {
     width: 350px;
 }
+
+.center-max-800 {
+  z-index: 10;
+
+  left:0;
+  right:0;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  position: absolute;
+  width: 100%;
+  max-width: 800px;
+}
+
+ion-input.input-fill-outline.sc-ion-input-md-h {
+  min-height: 40px;
+  margin-top: 10px;
+}

@@ -10,7 +10,12 @@
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background-color: rgba(0,0,0,.5);
-  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.3);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.221);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6284fe;
+
 }
 
 ion-button {
@@ -19,21 +24,21 @@ ion-button {
 
 /** Ionic CSS Variables **/
 :root {
-  // /** primary **/
-  // --ion-color-primary: #3880ff;
-  // --ion-color-primary-rgb: 56, 128, 255;
-  // --ion-color-primary-contrast: #ffffff;
-  // --ion-color-primary-contrast-rgb: 255, 255, 255;
-  // --ion-color-primary-shade: #3171e0;
-  // --ion-color-primary-tint: #4c8dff;
-
-  /** secondary **/
-  --ion-color-secondary: #3dc2ff;
-  --ion-color-secondary-rgb: 61, 194, 255;
+  /** (Secondary override) **/
+  --ion-color-secondary: #3880ff;
+  --ion-color-secondary-rgb: 56, 128, 255;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #36abe0;
-  --ion-color-secondary-tint: #50c8ff;
+  --ion-color-secondary-shade: #3171e0;
+  --ion-color-secondary-tint: #4c8dff;
+
+  /** secondary **/
+  // --ion-color-secondary: #3dc2ff;
+  // --ion-color-secondary-rgb: 61, 194, 255;
+  // --ion-color-secondary-contrast: #ffffff;
+  // --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  // --ion-color-secondary-shade: #36abe0;
+  // --ion-color-secondary-tint: #50c8ff;
 
   /** tertiary + primary override **/
   --ion-color-tertiary: #5260ff;
@@ -270,28 +275,28 @@ ion-button {
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: normal;
-  src: url("../assets/fonts/MontserratAlternates-Regular.ttf");
+  src: url("../assets/fonts/Montserrat-Regular.ttf");
 }
 
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: bold;
-  src: url("../assets/fonts/MontserratAlternates-Bold.ttf");
+  src: url("../assets/fonts/Montserrat-Bold.ttf");
 }
 
 @font-face {
   font-family: 'Montserrat';
   font-style: italic;
   font-weight: normal;
-  src: url("../assets/fonts/MontserratAlternates-Italic.ttf");
+  src: url("../assets/fonts/Montserrat-Italic.ttf");
 }
 
 @font-face {
   font-family: 'Montserrat';
   font-style: italic;
   font-weight: bold;
-  src: url("../assets/fonts/MontserratAlternates-BoldItalic.ttf");
+  src: url("../assets/fonts/Montserrat-BoldItalic.ttf");
 }
 
 

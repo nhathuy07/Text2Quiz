@@ -1,0 +1,72 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Flashcards</ion-title>
+
+    <ion-buttons slot='start'>
+      <ion-button (click)="exitRevision()"><ion-icon name="chevron-back-outline"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollY]="acceptScroll" [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Flashcards</ion-title>
+      <ion-buttons slot='start'>
+        <ion-button (click)="exitRevision()"><ion-icon name="chevron-back-outline"></ion-icon></ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <div slot="fixed" style="z-index: 20; user-select: none; padding: 10px; height: fit-content; width: 100%;">
+        
+    <div #dropzone style="color: #1b2783;  border: 2px dotted #475cff; height: calc(100%); border-radius: 15px; background-color: #ffffff;">
+      <ion-grid>
+        <ion-row style="height: 145px; margin-left: 5px;">
+          <ion-col style="max-width: fit-content; padding: 0px;" *ngIf="showImage">
+            <img #flashcardImg style="padding: 0px;" src="https://t4.ftcdn.net/jpg/05/17/53/57/360_F_517535712_q7f9QC9X6TQxWi6xYZZbMmw5cnLMr279.jpg" height="130px"/>
+          </ion-col>
+          <ion-col style="padding: 10px ;" *ngIf="isResourceReady">
+            <h3><b>{{currentA}}</b></h3><br/>
+            <p>{{currentQ}}</p>
+          </ion-col>
+          
+        </ion-row>
+        <ion-row>
+          <ion-col style="max-width: fit-content;">
+            <button (click)="showImage=!showImage" style="padding: 10px;">Toggle image</button>
+          </ion-col>
+          <ion-col style="width:fit-content">
+            <button (click)="nextQ()" style="padding: 10px;">{{skipBtnLabel}}</button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      
+    </div>
+  </div>
+
+  <div style="padding-top: 150px;height: 100%; max-width: 880px; margin:auto;">
+
+
+      
+
+      <div style="user-select: none; z-index: 10; padding-top: 150px;" *ngIf="isResourceReady">
+
+          <ion-item  class="draggable" *ngFor="let p of keys">
+            {{p}}
+            <ion-icon name="reorder-three-outline" slot="end"></ion-icon>
+          </ion-item>
+
+      </div>
+
+      
+
+      <div style="margin-top: 150px;user-select: none; z-index: 10; margin: auto; align-items: center;" *ngIf="!isResourceReady">
+
+          <img src="../../assets/icon/ellipsis.gif" style="margin-left: auto; margin-right: auto;"/>
+
+      </div>
+  </div>
+
+
+</ion-content>

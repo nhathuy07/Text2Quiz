@@ -47,9 +47,9 @@
       
       <!-- Rich text editor (unstable on mobile for now) -->
       <!-- On mobile, bold/italic/underline don't work unless some text is selected -->
-      <div #rtetoolbar style="margin-left: 5px; width: 100%" (click)="RTEUpdateToggle()">
+      <div #rtetoolbar style="margin-left: 5px; width: 100%; display: flexbox;" (click)="RTEUpdateToggle()">
         &nbsp;
-        <span style="margin-bottom: 4px;">
+        <span style="margin-bottom: 4px; float: left;">
           <button (click)="RTECommand('bold', $event)" activated="false" class="rtebtn" id="bold"><strong (click)="RTEPrevDefault($event)">B</strong></button>
           <button (click)="RTECommand('italic', $event)" activated="false" class="rtebtn" id="italic">&nbsp;<em>I</em></button>
           <button (click)="RTECommand('underline', $event)" activated="false" class="rtebtn" id="underline"><u>U</u></button>
@@ -60,42 +60,58 @@
             H<sub>2</sub>
           </button>
         </span>
-        &nbsp;
-        <span>
-          <button #highlight (click)="RTEHighlightToggle($event)" activated="false" class="rtebtn" style="max-width: 100px; min-width: 100px;">
-            Highlight
-          </button>
+
+        <span class="rbreak">
+          &nbsp;
         </span>
 
+        <button (click)="RTECommand('insertOrderedList', $event)" activated="false" id="insertOrderedList" class="rtebtn" style="width: 37px ; padding-top: 12px;">
+          12
+        </button>
+        <button (click)="RTECommand('insertUnorderedList', $event)" activated="false" id="insertUnorderedList" class="rtebtn">
+          <ion-icon font-size="32px" name="list-outline"></ion-icon>
+        </button>
+        <button (click)="RTEInsertCheckbox($event)" activated="false" id="ul" class="rtebtn">
+          <ion-icon name="checkbox-outline"></ion-icon>
+        </button>
+
         <br class="rbreak"/>
-        &nbsp;
-        <span>
-          <button (click)="RTECommand('insertOrderedList', $event)" activated="false" id="insertOrderedList" class="rtebtn" style="width: 37px ; padding-top: 12px;">
-            12
-          </button>
-          <button (click)="RTECommand('insertUnorderedList', $event)" activated="false" id="insertUnorderedList" class="rtebtn">
-            <ion-icon font-size="32px" name="list-outline"></ion-icon>
-          </button>
-          <button (click)="RTEInsertCheckbox($event)" activated="false" id="ul" class="rtebtn">
-            <ion-icon name="checkbox-outline"></ion-icon>
-          </button>
-          &nbsp;
+        
+        <!-- special features banner -->
+        
+        <span class="span-right-desktop">
+          <span>
+            <button #highlight (click)="RTEHighlightToggle($event)" activated="false" class="rtebtn special" style="max-width: 140px; min-width: 110px; text-align: left;">
+              <ion-icon color="primary" name="bookmark-outline"></ion-icon>
+              Highlight
+            </button>
+          </span>
 
           <!-- Hidden file input button, substituted by a button -->
           <input (change)="RTEHandleFileUpload($event)" #inputfile type="file" style="width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; position: absolute; z-index: -1;"/>
           
           <!-- This btn will be linked to the hidden file button -->
-          <button id="attachFile" class="rtebtn">
-            <ion-icon name="document-attach-outline"></ion-icon>
+          <button activated="false" id="attachFile" class="rtebtn special" style="min-width: 100px; max-width: 100px; text-align: left;">
+            <ion-icon color="primary" name="document-attach-outline"></ion-icon>
+            Upload
           </button>
 
           <ion-popover #fileChooserOptions trigger="attachFile" triggerAction="click">
             
             <ng-template>
               <ion-label style="padding: 10px;">Insert...</ion-label>
-              <ion-button style="--box-shadow:none" (click)="RTEOpenFileDialog('OCR')">OCR scans</ion-button>
-              <ion-button style="--box-shadow:none" (click)="RTEOpenFileDialog('Insert')">Document(s)</ion-button>
-              <ion-button style="--box-shadow:none" (click)="RTEOpenFileDialog('Transcript')">Voice transcript(s)</ion-button>
+              <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('OCR')">
+                <ion-icon slot="start" name="scan-outline"></ion-icon>
+                <span><b>Scan images (OCR) </b></span>
+              </ion-button>
+              <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Insert')">
+                <ion-icon slot="start" name="document-text-outline"></ion-icon>
+                <span><b>Documents </b></span>
+              </ion-button>
+              <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Transcript')">
+                <ion-icon slot="start" name="mic-outline"></ion-icon>
+                <span><b>Voice transcripts</b></span>
+              </ion-button>
 
             </ng-template>
           </ion-popover>

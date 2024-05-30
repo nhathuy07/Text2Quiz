@@ -34,6 +34,7 @@
     "@types/gapi.auth2": "^0.0.60",
     "@types/gapi.drive": "^0.0.9",
     "angular-oauth2-oidc": "^17.0.2",
+    "capacitor-voice-recorder": "^5.0.0",
     "form-data": "^4.0.0",
     "http2": "^3.3.7",
     "ionicons": "^7.2.1",

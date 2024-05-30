@@ -2,8 +2,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { CapacitorHttp } from '@capacitor/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { WeekDay } from '@angular/common';
 
 export interface UserProfile {
   info: {
@@ -15,6 +14,17 @@ export interface UserNoteMetadata {
   id: string;
   name: string;
   subject: string;
+  last_percentage?: number;
+}
+
+export interface RevisionSummary {
+  total: number;
+  correct: number;
+  retried: number;
+
+  weak_points: string[];
+  next_revision_due: number;
+  next_revision_due_weak_points: number;
 }
 
 export interface UserNoteContent {
@@ -22,6 +32,15 @@ export interface UserNoteContent {
   subject: string;
   content: string;
   keywords?: Set<string>;
+}
+
+export interface StudyPlan {
+  title: string;
+  threshold: number;
+  filters: Set<string>;
+  due?: Date;
+  schedule?: WeekDay[];
+  recursive: boolean;
 }
 
 @Injectable({
@@ -34,7 +53,7 @@ export class UserResourceService implements OnInit {
     oauthService.configure({
       issuer: "https://accounts.google.com",
       strictDiscoveryDocumentValidation: false,
-      silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
+      // silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
       // get the current window's URI /callback page
       redirectUri: `${window.location.origin}/callback`,
       clientId: environment.GAPI_CLIENT_ID,
@@ -45,6 +64,27 @@ export class UserResourceService implements OnInit {
 
   ngOnInit(): void {
 
+  }
+
+  /**
+   * Fisher-Yates shuffling algorithm
+   * @param {Array<any>} arr input array for shuffling
+   * @returns {Array<any>}
+   * https://www.geeksforgeeks.org/shuffle-a-given-array-using-fisher-yates-shuffle-algorithm/
+   *
+  **/
+  public _shuffle_list(arr: Array<string>): Array<string> {
+    let _a = arr
+    for (let i = _a.length - 1; i > 0; i--) 
+      { 
+          // Pick a random index from 0 to i 
+          let j = Math.floor(Math.random() * i);
+   
+          // Swap arr[i] with the element 
+          // at random index 
+          [_a[i], _a[j]] = [_a[j], _a[i]];
+      }
+    return _a
   }
 
   public async signIn(force: boolean): Promise<string | null> {
@@ -64,14 +104,15 @@ export class UserResourceService implements OnInit {
     } else {
 
       if (!force) {
+
         if (!confirm("[WARN] Session expired! Log in again?")) {
           return null
         }
+
       }
 
       this.oauthService.initLoginFlow();
       this.oauthService.initLoginFlow();
-      // Indicate failed access token retrieval (optional)
       return this.oauthService.getAccessToken();
       
     }
@@ -108,15 +149,17 @@ export class UserResourceService implements OnInit {
       headers: {'Authorization': `Bearer ${await this.signIn(false)}`}
     })
 
-
+    
     if (res.status == 200 && res_meta.status == 200) {
       // return res.data.split('\n')[2]
-      console.log(res.data.split('\n'))
+
+      let __delim_pos = res.data.indexOf('\n')
+
       return {
         name: res_meta.data.name.split('::')[1].replaceAll('.html',''),
-        subject: res_meta.data.name.split('::')[0],
-        content: res.data.split('\n')[1],
-        keywords: res.data.split('\n')[0].split(', ')
+        subject: res_meta.data.name.split('::',1)[0],
+        content: res.data.substring(__delim_pos+1),
+        keywords: new Set<string>(res.data.substring(0,__delim_pos).split(','))
       }
 
     } else {
@@ -126,7 +169,7 @@ export class UserResourceService implements OnInit {
         content: '',
         subject: '',
         name: '',
-        keywords: new Set<string>
+        keywords: new Set<string>()
       }
     }
 
@@ -137,10 +180,10 @@ export class UserResourceService implements OnInit {
     
     let arr = new Array<UserNoteMetadata>();
 
-    await this.refreshAccessToken()
+    // await this.refreshAccessToken()
     const res = await CapacitorHttp.get(
       {
-        url: "https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&mimeType='text/html'",
+        url: "https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=mimeType = 'text/html'",
         headers: {
           "Authorization": `Bearer ${await this.signIn(false)}`
         }
@@ -171,10 +214,10 @@ export class UserResourceService implements OnInit {
   }
 
   public async getSubjectFilters(): Promise<Set<string>> {
-    await this.refreshAccessToken()
+    // await this.refreshAccessToken()
     const res = await CapacitorHttp.get(
       {
-        url: "https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&mimeType='text/html'",
+        url: "https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=mimeType = 'text/html'",
         headers: {
           "Authorization": `Bearer ${await this.signIn(false)}`
         }
@@ -193,8 +236,154 @@ export class UserResourceService implements OnInit {
     return returns;
   }
 
-  public createPlan(): boolean {
-    return true;
+  public async writeServerTempFile(content: any, title: string, keywords?: Set<string>): Promise<string | null> {
+    console.log(keywords)
+    const r = await CapacitorHttp.post(
+      {
+        url: `http://${environment.BACKEND_LOC}/temp/`,
+        data: {
+          'content': content,
+          'title': title,
+          'keywords': Array.from(keywords?keywords:[])
+        }
+      }
+    )
+    return r.data
+  }
+
+  public async readServerTempFile(id: string): Promise<any[]> {
+    const r = await CapacitorHttp.get(
+      {
+        url: `http://${environment.BACKEND_LOC}/temp/${id}`,
+        // params: {'id': id}
+      }
+    )
+    // title,content,keywords
+    if (r.status != 200) {
+      return [null, null, null]
+    }
+    return r.data
+  }
+
+  public async logRevisionResult(title:string, summary: RevisionSummary):Promise<boolean> {
+    
+    // check if result already exists
+    const check_res =await CapacitorHttp.get(
+      {
+        url: `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name = '${title}.last'`,
+        headers: {
+          "Content-Type": "multipart/related; boundary=ENDPART",
+          // @ts-ignore
+          "Authorization": `Bearer ${await this.signIn(false)}`
+        },
+      }
+    )
+
+    let exist = ""
+
+    try
+      {if (check_res.data.files[0].name == `${title}.last`) {
+        exist = check_res.data.files[0].id
+      }}
+    catch (e) {
+      
+    }
+    
+
+    const request_body: string[] = [
+      "--ENDPART",
+      "Content-Type: application/json; encoding=utf-8",
+      "",
+      JSON.stringify({
+        "name": `${title}.last`,
+        "mimeType": "application/json; encoding=utf-8",
+        "parents": ["appDataFolder"],
+      }),
+      "\n--ENDPART\n",
+      JSON.stringify({
+        "date": Date.now(),
+        "total": summary.total,
+        "correct": summary.correct,
+        "weak_points": summary.weak_points,
+        "next_revision_due": summary.next_revision_due,
+        "retried": summary.retried
+        // "next_revision_due_weak_points": summary.next_revision_due_weak_points
+      }),
+      "\n--ENDPART--\n"
+    ]
+
+    console.log(check_res.data)
+
+    if (exist == '') {
+      const res = CapacitorHttp.post(
+        {
+          url: "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+          headers: {
+            "Content-Type": "multipart/related; boundary=ENDPART",
+            // @ts-ignore
+            "Authorization": `Bearer ${await this.signIn(false)}`
+          },
+          data: request_body.join("\n")
+        }
+      )
+    } else {
+      const res = CapacitorHttp.patch(
+        {
+          url: `https://www.googleapis.com/upload/drive/v3/files/${exist}`,
+          headers: {
+            "Content-Type": "multipart/related; boundary=ENDPART",
+            // @ts-ignore
+            "Authorization": `Bearer ${await this.signIn(false)}`
+          },
+          data: request_body.join("\n")
+        }
+      )
+    }
+
+
+    return true
+    // return ((await res).status == 200)
+
+  }
+
+  public async createPlan(plan: StudyPlan): Promise<boolean> {
+    
+    const request_body: string[] = [
+      "--ENDPART",
+      "Content-Type: application/json; encoding=utf-8",
+      "",
+      JSON.stringify({
+        "name": `${plan.title}.plan.json`,
+        "mimeType": "application/json",
+        "parents": ["appDataFolder"],
+      }),
+      "\n--ENDPART\n",
+      JSON.stringify({
+        "filters": plan.filters,
+        "threshold": plan.threshold,
+        "due": plan.due,
+        "schedule":plan.schedule,
+        "recursive": plan.recursive
+      }),
+      "--ENDPART--"
+    ]
+
+    console.log(request_body)
+
+    const r = await CapacitorHttp.post(
+      {
+        url: "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+        headers: {
+          "Content-Type": "multipart/related; boundary=ENDPART",
+          // @ts-ignore
+          "Authorization": `Bearer ${await this.signIn(false)}`
+        },
+        data: request_body.join("\n")
+      }
+    )
+
+    if (r.status == 200) return true;
+    else return false;
   }
 
   public updatePlan(): boolean {

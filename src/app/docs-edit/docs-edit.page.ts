@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ViewChild } from '@angular/core';
 import { CapacitorHttp } from '@capacitor/core';
 import { UserResourceService } from '../user-resource.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-docs-edit',
@@ -119,22 +120,25 @@ export class DocsEditPage implements OnInit {
   async tryGetExistingNoteContent() {
     
     let note = await this.userResource.getNoteByID(this.note_id)
+    console.info(note)
 
     this.rte.nativeElement.innerHTML = note.content
     this.note_name = note.name
     this.note_subject = note.subject
     if (note.keywords != undefined) {
       this.note_keywords = note.keywords
+    } else {
+      this.note_keywords = new Set<string>();
     }
   }
 
   async getExistingSubjects() {
     this.availableSubjects = await this.userResource.getSubjectFilters()
-    console.log(this.availableSubjects)
+    // console.log(this.availableSubjects)
   }
 
   setTextSubject(event: any): boolean {
-    console.log(event)
+    // console.log(event)
     if (event.detail.value == "Add...") {
       return this.newSubject();
     }
@@ -174,7 +178,7 @@ export class DocsEditPage implements OnInit {
   async uploadOrUpdateNote() {
 
     // console.log(this.note_id);
-    console.log(await this.userResource.signIn(false))
+    await this.userResource.signIn(false)
 
     if (!this.validateFields()) {
       return;
@@ -203,7 +207,7 @@ export class DocsEditPage implements OnInit {
       "--ENDPART--"
     ]
     
-    await this.userResource.refreshAccessToken()
+    // await this.userResource.refreshAccessToken()
 
     const req = await CapacitorHttp.patch({
       url: `https://www.googleapis.com/upload/drive/v3/files/${this.note_id}`,
@@ -220,7 +224,7 @@ export class DocsEditPage implements OnInit {
     
     if (req.status == 200) {
       this.note_id = req.data.id
-      console.log(this.note_id)
+      // console.log(this.note_id)
 
       alert("Uploaded successfully!")
       this.router.navigate(['dashboard'])
@@ -248,7 +252,7 @@ export class DocsEditPage implements OnInit {
       
       console.log(request_body)
 
-      await this.userResource.refreshAccessToken()
+      // await this.userResource.refreshAccessToken()
 
       const req = await CapacitorHttp.post({
         url: "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
@@ -389,6 +393,8 @@ export class DocsEditPage implements OnInit {
     if (btn.getAttribute("activated") == "true") {
       document.execCommand("hiliteColor",false,"ffc701")
 
+      console.log(this.note_keywords)
+
       // check if selected elem is a non-empty string
       if (document.getSelection()?.toString() != undefined) {
         let sel = document.getSelection()?.toString()
@@ -433,7 +439,7 @@ export class DocsEditPage implements OnInit {
     let uploadCnt = 0
     // Convert images (OCR mode)
     if (this._uploadtype == 'OCR') {
-      _url = 'http://127.0.0.1:7860/scan2ocr'
+      _url = `http://${environment.BACKEND_LOC}/scan2ocr`
       uploadCnt = files.length
       upload_form.append('uploads', uploadCnt.toString())
       for (let i = 0; i < files.length; i++) {
@@ -441,7 +447,7 @@ export class DocsEditPage implements OnInit {
       }
 
     } else {
-      _url = 'http://127.0.0.1:7860/convert2html'
+      _url = `http://${environment.BACKEND_LOC}/convert2html`
       // Insert documents
       // let uploadQueue: Map<string, any> = new Map<string, any>()
 
