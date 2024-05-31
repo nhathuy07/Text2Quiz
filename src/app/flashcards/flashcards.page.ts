@@ -247,7 +247,7 @@ export class FlashcardsPage implements OnInit {
     // let __kw = new Map<string, string>()
     // let __imgs = new Map<string, string>()
     const _req = await CapacitorHttp.get({
-      url: `http://${environment.BACKEND_LOC}/getFlashcards/${id}/${lang}`
+      url: `${environment.BACKEND_LOC}/getFlashcards/${id}/${lang}`
     })
     // console.log(_req)
     for (let i = 0; i < _req.data.defs.length; i++) {

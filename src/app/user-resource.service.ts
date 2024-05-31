@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { CapacitorHttp } from '@capacitor/core';
 import { WeekDay } from '@angular/common';
+// import { url } from 'inspector';
 
 export interface UserProfile {
   info: {
@@ -22,7 +23,7 @@ export interface RevisionSummary {
   correct: number;
   retried: number;
 
-  weak_points: string[];
+  weak_points: number[];
   next_revision_due: number;
   next_revision_due_weak_points: number;
 }
@@ -57,7 +58,7 @@ export class UserResourceService implements OnInit {
       // get the current window's URI /callback page
       redirectUri: `${window.location.origin}/callback`,
       clientId: environment.GAPI_CLIENT_ID,
-      scope: 'openid https://www.googleapis.com/auth/drive.appdata',
+      scope: 'openid https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile',
       oidc: false
     })
   }
@@ -240,7 +241,7 @@ export class UserResourceService implements OnInit {
     console.log(keywords)
     const r = await CapacitorHttp.post(
       {
-        url: `http://${environment.BACKEND_LOC}/temp/`,
+        url: `${environment.BACKEND_LOC}/temp/`,
         data: {
           'content': content,
           'title': title,
@@ -251,10 +252,17 @@ export class UserResourceService implements OnInit {
     return r.data
   }
 
+  public async getLoggedInUserName() {
+    const r = await CapacitorHttp.get(
+     { url: "https://www.googleapis.com/userinfo/v2/me", headers: {"Authorization": `Bearer ${await this.signIn(false)}`}}
+    )
+    return r.data.name ? r.data.name : ""
+  }
+
   public async readServerTempFile(id: string): Promise<any[]> {
     const r = await CapacitorHttp.get(
       {
-        url: `http://${environment.BACKEND_LOC}/temp/${id}`,
+        url: `${environment.BACKEND_LOC}/temp/${id}`,
         // params: {'id': id}
       }
     )

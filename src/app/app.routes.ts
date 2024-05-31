@@ -2,10 +2,7 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
 
-  {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
-  },
+
 
   {
     path: 'signin',
@@ -30,7 +27,7 @@ export const routes: Routes = [
     loadComponent: () => import('./docs-edit/docs-edit.page').then( m => m.DocsEditPage)
   },
   {
-    path: 'revision/:id/:inferred/:lang',
+    path: 'revision/:id/:approx_check/:lang',
     loadComponent: () => import('./revision/revision.page').then( m => m.RevisionPage)
   },
   {

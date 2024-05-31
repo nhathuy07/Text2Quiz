@@ -8,7 +8,7 @@
   <div class="background"></div>
   <div class="white-fade"></div>
 
-  <div class="foreground">
+  <div class="foreground" style="display: flex; flex-direction: column; height: calc(100vh - 10px); margin-bottom: 10px;">
     <ion-card style="background: transparent; box-shadow: none; ">
       <ion-card-title class="white-text text-shadow text-title">Greetings, <strong>{{username}}!</strong></ion-card-title>
     </ion-card>
@@ -37,13 +37,12 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-card class="card-margin card-padding">
+    <ion-card class="card-margin card-padding" style="flex-grow: 1;  margin-top: 15px;">
       <ion-card-title style="padding: 8px;">Study materials</ion-card-title>
       <ion-card-content style="flex-grow: 1;  min-height: 300px; padding-left: 8px; padding-right: 8px;">
 
           <ion-row style="display: flex; flex-wrap: nowrap; overflow-x: scroll;">
             <ion-chip [outline]="true" class="special-yellow" style="border-color: #cc9610; border-width: 2px; color: #cc9610; font-weight: bold; margin-left: 0px; white-space: nowrap; min-width: 110px;">⭐ Focused</ion-chip>
-            
             <ion-chip [outline]="!(currentFilter=='*')" (click)="updateSubjectFilter('*')" style="white-space: nowrap; min-width:fit-content;">All</ion-chip>
             <ion-chip [outline]="!(currentFilter==s)" (click)="updateSubjectFilter(s)" style="white-space: nowrap; min-width:fit-content;" *ngFor="let s of userSubjects">{{s}}</ion-chip>
           </ion-row>
@@ -64,7 +63,7 @@
 
     </ion-card>
 
-    <ion-fab>
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
       <ion-fab-button (click)="create_note()">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
@@ -128,33 +127,39 @@
               <ion-ripple-effect></ion-ripple-effect>
               <ion-card-content>
                 <ion-label>
-                  <h2 class="special"><b>Factual questions</b></h2>
+                  <h2 class="special"><b>❔Factual questions</b></h2>
                   <p>Practise with questions directly related to the given material.</p>
                 </ion-label>
               </ion-card-content>
             </ion-card>
 
-            <ion-list>
-
+            <ion-card (click)="initFlashcardView()" class="ion-activatable ripple-parent rounded-rectangle" style="width: 100%;">
               
-              <ion-item button (click)="initRevisionProcess(true,false)">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-card-content>
+                <ion-label>
+                  <h2 class="special">🗃️ Flashcards</h2>
+                  <p>Familiarize yourself with key terms</p>
+                </ion-label>
+              </ion-card-content>
+            </ion-card>
+
+
+              <!-- <ion-item button (click)="initRevisionProcess(true,false)">
                 <ion-label>
                   <h2>Inferred questions</h2>
                   <p>Freely think beyond the scope of the material (ungraded)</p>
                 </ion-label>
-              </ion-item>
-              <ion-item button (click)="initFlashcardView()">
-                <ion-label>
-                  <h2>Flashcards</h2>
-                  <p>Familiarize yourself with key terms</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
+              </ion-item> -->
 
-            <ion-select value="Vietnamese" label="Generate quiz in:" (ionChange)="changeInferenceLang($event)" interface="popover" placeholder="Language..." style="padding-left: 16px;">
+
+            <ion-select value="Vietnamese" label="Generate quiz in:" (ionChange)="changeInferenceLang($event)" interface="popover" placeholder="Language..." style="padding-left: 16px;" justify="start">
               <ion-select-option value="Vietnamese">Tiếng Việt</ion-select-option>
               <ion-select-option value="English">English</ion-select-option>
             </ion-select>
+
+            <ion-checkbox [(ngModel)]="approxCheck" labelPlacement="end" style="padding-left: 16px;">Approximate grading mode (for open-ended questions).</ion-checkbox>
+
           </ion-card-content>
 
         </ion-card>

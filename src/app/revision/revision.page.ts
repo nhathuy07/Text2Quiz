@@ -7,13 +7,13 @@ import { addIcons } from 'ionicons';
 import * as ionIcons from 'ionicons/icons'
 
 import {ItemReorderEventDetail} from '@ionic/angular'
-
+// import { CapacitorHttp } from '@capacitor/core';
 import { RevisionSummary, UserResourceService } from '../user-resource.service'
 import { ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CapacitorHttp } from '@capacitor/core';
 import { environment } from 'src/environments/environment';
-
+import { LoadingController } from '@ionic/angular'
 
 export interface QuesitionState {
   id: number;
@@ -27,7 +27,7 @@ export interface QuesitionState {
 export interface Question {
   pgph_i: number;
   prompt: string;
-  type: "MCQ" | "MULT" | "ARRANGE" | "OPEN" | "AMEND";
+  type: "MCQ" | "MULT" | "ARRANGE" | "OPEN" | "AMEND" | 'OPEN_FITB';
   choices: Array<string>;
   keys: Array<string>;
   resource_uri?: string;
@@ -55,6 +55,8 @@ export class RevisionPage implements OnInit {
   // @ts-ignore
   @ViewChild("revisionSummary") revisionSummary: HTMLIonModalElement
 
+  public __weak_points_i: Array<number> = [];
+
   public paragraphs: Array<Paragraph> = [];
   public questions: Array<Question> = [
   ];
@@ -80,6 +82,8 @@ export class RevisionPage implements OnInit {
   private n_id: string = ""
   private n_lang: string=""
 
+  private approx_check: boolean=false
+
   public summary: RevisionSummary = {
     next_revision_due: 0,
     next_revision_due_weak_points: 0,
@@ -91,7 +95,7 @@ export class RevisionPage implements OnInit {
 
   public acceptable_thresh = 0.8
 
-  constructor(private readonly userResource: UserResourceService, private ar: ActivatedRoute, private rt: Router) { 
+  constructor( private loading_throbber:LoadingController,  private readonly userResource: UserResourceService, private ar: ActivatedRoute, private rt: Router) { 
     // Init variables
     this.finished_loading = false;
     this.cur_state = {
@@ -99,18 +103,32 @@ export class RevisionPage implements OnInit {
     }
   }
 
+  async presentLoading() {
+    // Show loading throbber while app loads data
+    const loading = await this.loading_throbber.create({
+        message: 'Please wait...',
+        translucent: true,
+        
+    });
+    await loading.present();
+    return loading;
+  }
   // Run when Revision page is accessed
   async ionViewDidEnter() {
-    await this.pageInit()
-    this.finished_loading = true;
+    const loading = await this.presentLoading();
+      try {
+        await this.pageInit()
+      } catch (error) {
+          alert(`Error loading data: ${error}`);
+      } finally {
+          await loading.dismiss();
+      }
+      this.finished_loading=true
   }
 
   // Init quiz interface
   async pageInit() {
 
-    // this.userResource.readServerTempFile(_id)
-
-    // this.revision_finished = true
 
     for (let i = 0; i < this.questions.length; i++) {
       this.q_states.push({id: i, response: [], correct:null, tried_again:false})
@@ -131,14 +149,16 @@ export class RevisionPage implements OnInit {
       (params: any) => {
         this.n_id = params["id"];
         this.n_lang = params["lang"]
+        this.approx_check = params["approx_check"]
       }
     )
     // console.log(__i)
+    console.log(this.approx_check)
 
     let n_file = await this.userResource.readServerTempFile(this.n_id)
     this.n_title = n_file[0]
 
-    const _r = await CapacitorHttp.get({url: `http://${environment.BACKEND_LOC}/generateQuiz/${this.n_id}/${this.n_lang}`})
+    const _r = await CapacitorHttp.get({url: `${environment.BACKEND_LOC}/generateQuiz/${this.n_id}/${this.n_lang}`})
     for (let i = 0; i < _r.data.questions.length; i++) {
 
       this.questions.push( JSON.parse(JSON.stringify(_r.data.questions[i])) as Question)
@@ -170,6 +190,7 @@ export class RevisionPage implements OnInit {
         this.__arrange_get_possible_opts()
         break
       case 'OPEN':
+      case 'OPEN_FITB':
         this.__opn_init_input_fields()
         break
       case 'AMEND':
@@ -214,7 +235,7 @@ export class RevisionPage implements OnInit {
     }
   }
 
-  check_response(approx_check?: boolean) {
+  async check_response(approx_check?: boolean) {
     // Convert Arrays to strings to compare their content
     // because Array comparision only eval to True if pointed to same address
     
@@ -231,24 +252,50 @@ export class RevisionPage implements OnInit {
       this.prog_bar_color ="success";
 
       // TODO: Change inbuilt alert() to fancier anim/effect
-      alert("Correct!")
+      alert("✅ Correct!")
       this.next_q()
     } else {
 
       if ((this.questions[this.cur_state.id].type == 'OPEN'
         || this.questions[this.cur_state.id].type == 'AMEND')
-        && approx_check) 
+        && this.approx_check) 
         {
-        
+          let ret = await CapacitorHttp.post({
+            url: `${environment.BACKEND_LOC}/validateSimilarity`,
+            data: {
+              'lang': this.n_lang,
+              'sentences': [this.cur_state.response.toString(), this.questions[this.cur_state.id].keys.toString()]
+            }
+          })
+          if (ret.data.isSimilar == "True") {
+            this.cur_state.correct = true;
+            this.prog_bar_color ="success";
+      
+            // TODO: Change inbuilt alert() to fancier anim/effect
+            alert("✅ Seems right!")
+          } else {
+            this.cur_state.correct = false;
+            this.prog_bar_color = "danger"
+            // TODO: Change inbuilt alert() to fancier anim/effect
+            this.cur_state.tried_again = true;
+            alert(`❌ The correct answer is: ${this.questions[this.cur_state.id].keys.toString()}`)
+          }
         }
         else {
-        this.cur_state.correct = false;
-        this.prog_bar_color = "danger"
-        // TODO: Change inbuilt alert() to fancier anim/effect
-        this.cur_state.tried_again = true;
-        alert("Try again :(")
+          
+          if (this.questions[this.cur_state.id].type == 'OPEN' || this.questions[this.cur_state.id].type == 'AMEND') {
+            if (confirm(`❔The suggested answer is: ${this.questions[this.cur_state.id].keys.toString()}\n\nDo you think you got it right?\n\nOK for Yes\nCancel for No`)) {
+              this.cur_state.correct = true;
+              this.prog_bar_color ="success";
+              return
+            }
+          }
+          this.cur_state.correct = false;
+          this.prog_bar_color = "danger"
+          // TODO: Change inbuilt alert() to fancier anim/effect
+          this.cur_state.tried_again = true;
+          alert(`❌ The correct answer is: ${this.questions[this.cur_state.id].keys.toString()}`)
         }
-
 
     }
 
@@ -288,12 +335,12 @@ export class RevisionPage implements OnInit {
     return index
   }
 
-  set_user_response(re:Array<string>) {
+  async set_user_response(re:Array<string>) {
     this.cur_state.response = re
-    this.check_response()
+    await this.check_response()
   }
 
-  __mult_check_result() {
+  async __mult_check_result() {
     this.cur_state.response = []
     for (let i = 0; i < this.__mult_ret.length; i++) {
       if (this.__mult_ret[i].checked) {
@@ -301,12 +348,12 @@ export class RevisionPage implements OnInit {
       }
     }
     console.log(this.cur_state.response)
-    this.check_response()
+    await this.check_response()
   }
 
-  __arrange_check_result() {
+  async __arrange_check_result() {
     this.cur_state.response = this.__arrange_ret
-    this.check_response()
+    await this.check_response()
   }
 
   __arrange_set_response(ev: CustomEvent<ItemReorderEventDetail>) {
@@ -328,10 +375,10 @@ export class RevisionPage implements OnInit {
   }
 
   __get_complement(): string {
-    if (this.__calc_weighted_score() == 1) {
+    if (this.__calc_weighted_score() == this.questions.length) {
       return "Perfection!"
     }
-    if (this.__calc_weighted_score() >= this.acceptable_thresh) {
+    if (this.__calc_weighted_score() / this.questions.length >= this.acceptable_thresh) {
       return "Well done"
     }
     return "Could do better"
@@ -349,6 +396,7 @@ export class RevisionPage implements OnInit {
     alert(this.paragraphs[pgph_i].content)
   }
 
+
   __show_revision_summary() {
     
     let weak_pts = Array<number>(this.paragraphs.length).fill(0)
@@ -364,7 +412,7 @@ export class RevisionPage implements OnInit {
 
         if (this.q_states[i].tried_again) {
           this.summary.retried += 1
-          weak_pts[this.questions[i].pgph_i] += 0.3
+          weak_pts[this.questions[i].pgph_i] += 0.2
         }
       } else {
         weak_pts[this.questions[i].pgph_i] += 1
@@ -375,7 +423,8 @@ export class RevisionPage implements OnInit {
     // If paragraph_i<correct_q> = 65% paragraph_i<total_qs>
     for (let i = 0; i < weak_pts.length; i++) {
       if (weak_pts[i]/questions_in_pgph[i] > (1-0.64)) {
-        this.summary.weak_points.push( this.paragraphs[i].header )
+        this.summary.weak_points.push( i)
+        this.__weak_points_i.push(i)
       }
     }
 
@@ -390,6 +439,7 @@ export class RevisionPage implements OnInit {
     console.log(this.q_states)
     console.log(this.questions)
     this.revision_finished = true
+
   }
 
   try_get_serialized_array(arr: Array<any>) {
@@ -411,12 +461,44 @@ export class RevisionPage implements OnInit {
     }, 30)
   }
 
+  async __init_weak_point_revision() {
+    let _pgphs = []
+    for (let i = 0; i < this.__weak_points_i.length; i++) {
+      _pgphs.push(this.paragraphs[i])
+    }
+
+    let _r = await CapacitorHttp.post(
+      {
+        url: `${environment.BACKEND_LOC}/generateRedemption`,
+        data: {'pgphs': _pgphs, 'lang': this.n_lang}
+      }
+    )
+    
+    for (let i = 0; i < _r.data.questions.length; i++) {
+      // @ts-ignore
+      if (prompt(_r.data.questions[i].prompt).toLowerCase() == _r.data.questions[i].keys[0].toLowerCase()) {
+        confirm('✅ You got it right!')
+      } else {
+        confirm(`❌ The correct answer is ${_r.data.questions[i].keys[0]}`)
+      }
+    }
+
+
+  }
+
   async init_weak_point_revision() {
+    const l = await this.presentLoading()
+    try {
+      await this.__init_weak_point_revision()
+    } finally {
+      this.loading_throbber.dismiss()
+    }
 
   }
 
   async __log_result_and_retry() {
     await this.userResource.logRevisionResult(this.n_title, this.summary)
+    await this.init_weak_point_revision()
     
   }
 

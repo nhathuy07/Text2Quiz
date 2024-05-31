@@ -423,6 +423,8 @@ export class DocsEditPage implements OnInit {
     } else if (type == "Insert") {
       this.inputfile.nativeElement.setAttribute("accept", ".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.txt,.md, .rtf,")
     
+    } else {
+      alert("feature not implemented")
     }
     this.inputfile.nativeElement.click()
   }
@@ -439,7 +441,7 @@ export class DocsEditPage implements OnInit {
     let uploadCnt = 0
     // Convert images (OCR mode)
     if (this._uploadtype == 'OCR') {
-      _url = `http://${environment.BACKEND_LOC}/scan2ocr`
+      _url = `${environment.BACKEND_LOC}/scan2ocr`
       uploadCnt = files.length
       upload_form.append('uploads', uploadCnt.toString())
       for (let i = 0; i < files.length; i++) {

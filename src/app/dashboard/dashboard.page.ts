@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonSelect, IonSelectOption, IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, LoadingController, IonGrid, IonRow, IonCol, IonChip, IonItem, IonIcon, IonFabButton, IonFab, IonButton, IonLabel, IonCardSubtitle, IonCard, IonCardTitle, IonList, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {IonCheckbox, IonSelect, IonSelectOption, IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, LoadingController, IonGrid, IonRow, IonCol, IonChip, IonItem, IonIcon, IonFabButton, IonFab, IonButton, IonLabel, IonCardSubtitle, IonCard, IonCardTitle, IonList, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 import { Preferences } from '@capacitor/preferences';
 import { addIcons } from 'ionicons';
@@ -18,7 +18,7 @@ import { ElementRef, ViewChild } from '@angular/core';
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
-  imports: [IonSelect, IonSelectOption,  IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, IonGrid, IonRow, IonCol, IonChip, IonItem , IonFabButton, IonFab, IonIcon, IonButton, IonLabel, IonCardContent,  IonCardSubtitle, IonCard, IonList, IonCardTitle, IonCard, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonCheckbox,IonSelect, IonSelectOption,  IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, IonGrid, IonRow, IonCol, IonChip, IonItem , IonFabButton, IonFab, IonIcon, IonButton, IonLabel, IonCardContent,  IonCardSubtitle, IonCard, IonList, IonCardTitle, IonCard, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class DashboardPage implements OnInit {
 
@@ -44,6 +44,8 @@ export class DashboardPage implements OnInit {
   public currentFilter: string = "*";
 
   public inferLang: string = "Vietnamese";
+
+  public approxCheck: boolean = false;
 
   public currentNote: UserNoteMetadata= {
     name: '',
@@ -104,6 +106,9 @@ export class DashboardPage implements OnInit {
   }
 
   async __loadNoteContent(_note: UserNoteMetadata) {
+
+    
+
     this.currentNoteContent.keywords?.clear()
 
     this.noteViewerModalOpen = true
@@ -116,6 +121,7 @@ export class DashboardPage implements OnInit {
   }
 
   async pageInit() {
+    this.username = await this.userResource.getLoggedInUserName()
     this.noteList = await this.userResource.filterNotesBySubject("*")
     this.userSubjects = await this.userResource.getSubjectFilters()
     this.inferLang = "Vietnamese"
@@ -210,7 +216,7 @@ export class DashboardPage implements OnInit {
     
   }
 
-  async initRevisionProcess(inferred?:boolean, weak_points_only?:boolean) {
+  async initRevisionProcess(approx_check?:boolean, weak_points_only?:boolean) {
     
     if (!weak_points_only) {
       let id = await this.userResource.writeServerTempFile(this.currentNoteContent.content, this.currentNote.name, this.currentNoteContent.keywords)
@@ -220,7 +226,7 @@ export class DashboardPage implements OnInit {
       this.noteViewerModal.dismiss()
     
       setTimeout(() => {
-        this.rt.navigate(['revision', id, inferred, this.inferLang])
+        this.rt.navigate(['revision', id, this.approxCheck, this.inferLang])
       }, 30)
     } else {
       alert('feature coming soon!')

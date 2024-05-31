@@ -7,19 +7,25 @@
 
   </div>
   <!-- Login prompt -->
-  <div class="foreground">
-    <ion-card style="max-width: 465px; min-height: 400px; width: 100%; margin: 15px;">
-
-      <img width="320" style="display: block; margin: auto; padding-top: 35px; padding-left: 10px; padding-right: 10px;" src="../../assets/background/login_illustration.webp" />
+  <div class="foreground" style="flex-direction: column;">
+    <div style="width: 100%; flex-direction:row;">
+      <h2 style="width: 100%; padding-left: 20px; text-align: left; color: white; text-shadow: 0px 0px 8px #000000ee; font-weight: bold;">Text2Quiz</h2><p style="color: #fff; position: fixed;; top: 0; width: 100%; text-align: right; padding-right: 10px;">Test deployment. Expect service interruptions</p>
+    </div>
+    
+    <ion-card style="max-width: 465px; min-height: 400px; width: 100%; margin: 15px; height: calc(100% - 60px);">
       
+      <div style="display: flex; flex-direction: column; width: 100%; height: calc(100% - 150px); align-items: center; justify-content: center;">
+        
+      <!-- <ion-card-title style=" padding:10px; width: 100%; margin: auto;">Transforms pages of learning materials to bite-sized quizzes!</ion-label> -->
+        <img id="login_illustration" width="300" style="display: block; margin-bottom: 20px; margin-top: 20px;" src="../../assets/background/login_illustration.webp" />
+        <ion-card-title><p  class="ion-text-center">Transforms pages of learning materials to bite-sized quizzes! </p></ion-card-title>
+      </div>
+        <ion-card-content style="position:fixed; bottom: 0; width: 100%;">
       
-      <ion-card-title style="padding-top: 0px; padding-bottom: 20px;"><h1 class="ion-text-center" style="font-weight: bold;">Revising. Streamlined.</h1></ion-card-title>
-
-      <ion-card-content style="height: max-content; display: flex; align-content: center; margin: auto;">
 
         <ion-grid>
           
-          <ion-row class="ion-justify-content-center ion-align-items-end" >
+          <ion-row class="ion-justify-content-center" >
             <!-- Google Account authentication button -->
             <ion-button fill="clear" (click)="google_authenticate()" class="gsi-material-button">
               <div class="gsi-material-button-state"></div>
