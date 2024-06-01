@@ -269,7 +269,7 @@ export class DocsEditPage implements OnInit {
         console.log(this.note_id)
 
         alert("Uploaded successfully!")
-        // this.router.navigate(['dashboard'])
+        this.router.navigate(['dashboard'])
       } else {
         alert(`Uploading failed (${req.status})`)
       }
