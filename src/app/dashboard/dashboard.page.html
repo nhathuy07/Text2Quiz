@@ -37,8 +37,8 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-card class="card-margin card-padding" style="flex-grow: 1;  margin-top: 15px;">
-      <ion-card-title style="padding: 8px;">Study materials</ion-card-title>
+    <ion-card class="card-margin card-padding" style="flex-grow: 1;  margin-top: 15px; background-color: transparent; box-shadow: none; padding: 0px;">
+      <ion-card-title style="padding: 8px; font-weight: bold;">Study materials</ion-card-title>
       <ion-card-content style="flex-grow: 1;  min-height: 300px; padding-left: 8px; padding-right: 8px;">
 
           <ion-row style="display: flex; flex-wrap: nowrap; overflow-x: scroll;">
@@ -47,8 +47,8 @@
             <ion-chip [outline]="!(currentFilter==s)" (click)="updateSubjectFilter(s)" style="white-space: nowrap; min-width:fit-content;" *ngFor="let s of userSubjects">{{s}}</ion-chip>
           </ion-row>
           
-          <ion-list style="flex-grow:1; overflow-y: scroll; " class="ion-no-padding" lines="inset">
-            <ion-item [button]="true" (click)="loadNoteInViewerModal(note)" class="ion-no-padding" *ngFor="let note of noteList">
+          <ion-list style="flex-grow:1; overflow-y: scroll; margin-top: 5px;" class="ion-no-padding" lines="inset" >
+            <ion-item [button]="true" (click)="loadNoteInViewerModal(note)" class="ion-no-padding" *ngFor="let note of noteList" style="min-height: 50px;">
                   <!-- <ion-thumbnail slot="start">
                     <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
                   </ion-thumbnail> -->
