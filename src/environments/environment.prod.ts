@@ -2,6 +2,6 @@ export const environment = {
   production: true,
   GAPI_CLIENT_ID: "196991958847-2fdrci94acq7jf9ach8mbijcdbonv3c8.apps.googleusercontent.com",
   // GAPI_REDIRECT_URL: "http://localhost:8100/callback",\
-  BACKEND_LOC: "http://127.0.0.1:8000",
+  BACKEND_LOC: "https://nhathuy07-text2quiz-backend.hf.space",
   GAPI_SCOPES:'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.appfolder',
 };
