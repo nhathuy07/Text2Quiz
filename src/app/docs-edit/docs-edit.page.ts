@@ -449,7 +449,7 @@ export class DocsEditPage implements OnInit {
       }
 
     } else {
-      _url = `http://${environment.BACKEND_LOC}/convert2html`
+      _url = `${environment.BACKEND_LOC}/convert2html`
       // Insert documents
       // let uploadQueue: Map<string, any> = new Map<string, any>()
 
