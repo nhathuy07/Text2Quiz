@@ -70,7 +70,7 @@
     </ion-fab>
 
     <!-- Note Viewer Modal -->
-    <ion-modal style="--min-height: 650px" (willDismiss)="dismissNoteViewerModal()" #noteViewerModal [isOpen]="noteViewerModalOpen">
+    <ion-modal style="--min-height: calc(100% - 20px)" (willDismiss)="dismissNoteViewerModal()" #noteViewerModal [isOpen]="noteViewerModalOpen">
       <ng-template>
 
         <ion-header style="box-shadow: none;">
