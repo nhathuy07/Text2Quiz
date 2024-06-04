@@ -1,5 +1,6 @@
-.item-inner { padding: 0px }
-
+ion-item {
+ --inner-padding-end: 0px;
+}
 .background {
     position: absolute;
     background: url('../../assets/background/dashboard_banner.webp');
