@@ -1,7 +1,7 @@
 {
 "headers": [
   {
-    "source": "*.webp",
+    "source": "/assets/background/(*.webp)",
     "headers": [
       {
         "key": "Cache-Control",
@@ -10,7 +10,7 @@
     ]
   },
   {
-    "source": "*.ttf",
+    "source": "/(*.ttf)",
     "headers": [
       {
         "key": "Cache-Control",
