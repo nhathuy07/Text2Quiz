@@ -1,24 +1,6 @@
 {
   "headers": [
     {
-      "source": "/assets/background/(.*\\.webp)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=1296000"
-        }
-      ]
-    },
-    {
-      "source": "/assets/icon/(.*\\.webp)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=1296000"
-        }
-      ]
-    },
-    {
       "source": "/(.*)\\.ttf",
       "headers": [
         {
@@ -26,6 +8,6 @@
           "value": "public, max-age=1296000"
         }
       ]
-    },
+    }
   ]
 }
