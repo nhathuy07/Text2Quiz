@@ -1,20 +1,20 @@
 {
 "headers": [
   {
-    "source": "/assets/background/(*.webp)",
+    "source": "/^\/assets\/background\/(.*?)\.webp$/",
     "headers": [
       {
         "key": "Cache-Control",
-        "value": "public, max-age=1209600"
+        "value": "public, max-age=1296000"
       }
     ]
   },
   {
-    "source": "/(*.ttf)",
+    "source": "/^\/(.*?)\.ttf$/",
     "headers": [
       {
         "key": "Cache-Control",
-        "value": "public, max-age=31536000, immutable"
+        "value": "public, max-age=1296000"
       }
     ]
   }
