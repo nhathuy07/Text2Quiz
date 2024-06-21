@@ -5,7 +5,25 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=1296000"
+          "value": "public, max-age=1296000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "assets/background/(.*)\\.webp",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=1296000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "assets/icon/(.*)\\.webp",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=1296000, immutable"
         }
       ]
     }
