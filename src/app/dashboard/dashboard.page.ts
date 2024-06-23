@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {IonCheckbox, IonSelect, IonSelectOption, IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, LoadingController, IonGrid, IonRow, IonCol, IonChip, IonItem, IonIcon, IonFabButton, IonFab, IonButton, IonLabel, IonCardSubtitle, IonCard, IonCardTitle, IonList, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonFabList, IonCheckbox, IonSelect, IonSelectOption, IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, LoadingController, IonGrid, IonRow, IonCol, IonChip, IonItem, IonIcon, IonFabButton, IonFab, IonButton, IonLabel, IonCardSubtitle, IonCard, IonCardTitle, IonList, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 import { Preferences } from '@capacitor/preferences';
 import { addIcons } from 'ionicons';
@@ -11,14 +11,17 @@ import { Router } from '@angular/router';
 import * as ionIcons from 'ionicons/icons'
 import { UserNoteContent, UserNoteMetadata, UserResourceService } from '../user-resource.service';
 
+import { ActivatedRoute } from '@angular/router';
+
 import { ElementRef, ViewChild } from '@angular/core';
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
-  imports: [IonCheckbox,IonSelect, IonSelectOption,  IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, IonGrid, IonRow, IonCol, IonChip, IonItem , IonFabButton, IonFab, IonIcon, IonButton, IonLabel, IonCardContent,  IonCardSubtitle, IonCard, IonList, IonCardTitle, IonCard, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [ IonFabList, IonCheckbox,IonSelect, IonSelectOption,  IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, IonGrid, IonRow, IonCol, IonChip, IonItem , IonFabButton, IonFab, IonIcon, IonButton, IonLabel, IonCardContent,  IonCardSubtitle, IonCard, IonList, IonCardTitle, IonCard, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class DashboardPage implements OnInit {
 
@@ -62,7 +65,7 @@ export class DashboardPage implements OnInit {
 
   public userSubjects: Set<string> = new Set<string>
 
-  constructor(private rt: Router, private readonly userResource: UserResourceService, private loading_throbber: LoadingController) { 
+  constructor( private ar:ActivatedRoute, private rt: Router, private readonly userResource: UserResourceService, private loading_throbber: LoadingController) { 
     // add icons
     addIcons(ionIcons)
   }
@@ -125,6 +128,20 @@ export class DashboardPage implements OnInit {
     this.noteList = await this.userResource.filterNotesBySubject("*")
     this.userSubjects = await this.userResource.getSubjectFilters()
     this.inferLang = "Vietnamese"
+
+    let redir_note_id: string | undefined = undefined
+
+    this.ar.queryParams.subscribe( (v) => {redir_note_id = v["redir_id"]} )
+
+    console.info(redir_note_id)
+    if (redir_note_id != undefined) {
+      // @ts-ignore
+      let f = this.noteList.find((v) => {return v.id == redir_note_id})
+      console.log(f)
+      // @ts-ignore
+      this.loadNoteInViewerModal(f)
+    }
+
   }
 
   async fetch_access_key(): Promise<String | null> {
@@ -146,8 +163,8 @@ export class DashboardPage implements OnInit {
 
   }
 
-  create_note() {
-    this.rt.navigate(["docs-edit", "new"])
+  create_note(auto_redir: boolean = false) {
+    this.rt.navigate(["docs-edit", "new", auto_redir])
   }
 
   upload_note(): boolean {
@@ -174,7 +191,7 @@ export class DashboardPage implements OnInit {
     this.isPopoverOpen = !this.isPopoverOpen
   }
 
-  handleNoteOptions(action: string|null) {
+  async handleNoteOptions(action: string|null) {
     this.isPopoverOpen = false
     this.noteOptionsPopover.dismiss()
 
@@ -184,9 +201,27 @@ export class DashboardPage implements OnInit {
       this.dismissNoteViewerModal()
 
       setTimeout(() => {
-        this.rt.navigate(['docs-edit',this.currentNote.id])
+        this.rt.navigate(['docs-edit',this.currentNote.id, false])
       }, 30)
       
+    } else if (action == 'delete') {
+
+      if (!confirm("Delete this note?")) {
+        return;
+      }
+
+      let r = await CapacitorHttp.delete({
+        url: `https://www.googleapis.com/drive/v3/files/${this.currentNote.id}`,
+        headers: {'Authorization': `Bearer ${await this.userResource.signIn(false)}`}
+      })
+      if (r.status.toString().startsWith('2')) {
+        alert("File deleted.")
+        this.dismissNoteViewerModal()
+        this.pageInit()
+
+      } else {
+        alert (`Deletion failed (${r.status})`)
+      }
     }
     
   }
@@ -221,7 +256,6 @@ export class DashboardPage implements OnInit {
     if (!weak_points_only) {
       let id = await this.userResource.writeServerTempFile(this.currentNoteContent.content, this.currentNote.name, this.currentNoteContent.keywords)
 
-
       this.isPopoverOpen = false
       this.noteViewerModal.dismiss()
     
@@ -231,8 +265,6 @@ export class DashboardPage implements OnInit {
     } else {
       alert('feature coming soon!')
     }
-
-
   }
 
 }

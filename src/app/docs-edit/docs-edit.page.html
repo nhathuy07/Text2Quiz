@@ -93,25 +93,33 @@
           <!-- This btn will be linked to the hidden file button -->
           <button activated="false" id="attachFile" class="rtebtn special" style="min-width: 100px; max-width: 100px; text-align: left;">
             <ion-icon color="primary" name="document-attach-outline"></ion-icon>
-            Upload
+            Insert...
           </button>
 
           <ion-popover #fileChooserOptions trigger="attachFile" triggerAction="click">
             
             <ng-template>
-              <ion-label style="padding: 10px;">Insert...</ion-label>
+              <!-- <ion-label style="padding: 10px;">Insert...</ion-label> -->
+              
+              <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Auto-generated')">
+                <ion-icon slot="start" name="bulb-outline"></ion-icon>
+                <span><b>Auto-generated text</b></span>
+              </ion-button>
+              
               <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('OCR')">
                 <ion-icon slot="start" name="scan-outline"></ion-icon>
                 <span><b>Text from image </b></span>
               </ion-button>
+
               <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Insert')">
                 <ion-icon slot="start" name="document-text-outline"></ion-icon>
                 <span><b>Documents </b></span>
               </ion-button>
-              <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Transcript')">
+              
+              <!-- <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Transcript')">
                 <ion-icon slot="start" name="mic-outline"></ion-icon>
                 <span><b>Voice transcripts</b></span>
-              </ion-button>
+              </ion-button> -->
 
             </ng-template>
           </ion-popover>

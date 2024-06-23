@@ -38,6 +38,9 @@ export class DocsEditPage implements OnInit {
   public note_content: any;
   public note_subject: string = "";
   public note_language: string = "";
+
+  private walkthrough_mode: boolean = false;
+
   private note_keywords: Set<string> = new Set<string>;
 
   public note_id: string="";
@@ -93,11 +96,12 @@ export class DocsEditPage implements OnInit {
     this.ar.params.subscribe(
       (params: any) => {
         this.note_id = params["id"];
-      
+        this.walkthrough_mode = params["auto_redir"];
       }
     )
     // this.quill_editor.editorElem = quill_rte.nativeElement
     // load existing subjects
+    console.log("walkthrough mode", this.walkthrough_mode)
     await this.getExistingSubjects()
 
 
@@ -227,7 +231,11 @@ export class DocsEditPage implements OnInit {
       // console.log(this.note_id)
 
       alert("Uploaded successfully!")
-      this.router.navigate(['dashboard'])
+      if (this.walkthrough_mode) {
+        this.router.navigate(['dashboard'], {queryParams: {redir_id: this.note_id}})
+      } else {
+        this.router.navigate(['dashboard'])
+      }
     } else {
       alert(`Uploading failed (${req.status})`)
     }
@@ -269,7 +277,11 @@ export class DocsEditPage implements OnInit {
         console.log(this.note_id)
 
         alert("Uploaded successfully!")
-        this.router.navigate(['dashboard'])
+        if (this.walkthrough_mode) {
+          this.router.navigate(['dashboard'], {queryParams: {redir_id: this.note_id}})
+        } else {
+          this.router.navigate(['dashboard'])
+        }
       } else {
         alert(`Uploading failed (${req.status})`)
       }
@@ -410,7 +422,7 @@ export class DocsEditPage implements OnInit {
 
 
 
-  RTEOpenFileDialog(type: string) {
+  async RTEOpenFileDialog(type: string) {
 
     this._uploadtype = type
 
@@ -419,14 +431,21 @@ export class DocsEditPage implements OnInit {
     if (type == "OCR") {
       this.inputfile.nativeElement.setAttribute("accept", "image/*")
       // this.inputfile.nativeElement.setAttribute("capture","environment")
-      
+      this.inputfile.nativeElement.click()
     } else if (type == "Insert") {
       this.inputfile.nativeElement.setAttribute("accept", ".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.txt,.md, .rtf,")
-    
-    } else {
+      this.inputfile.nativeElement.click()
+    } else if (type == 'Auto-generated') {
+      let pr = prompt("Generate a study note about...")
+      
+      if (pr != null && pr.trim() != '') {
+        // let resp = await CapacitorHttp.get({})
+      }
+    } 
+    else {
       alert("feature not implemented")
     }
-    this.inputfile.nativeElement.click()
+    
   }
 
   async RTEHandleFileUpload(event: Event | any) {

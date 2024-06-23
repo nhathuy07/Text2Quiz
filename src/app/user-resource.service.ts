@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { CapacitorHttp } from '@capacitor/core';
 import { WeekDay } from '@angular/common';
+import { Router } from '@angular/router';
 // import { url } from 'inspector';
 
 export interface UserProfile {
@@ -49,7 +50,7 @@ export interface StudyPlan {
 })
 export class UserResourceService implements OnInit {
 
-  constructor(private readonly oauthService: OAuthService) { 
+  constructor(private rt: Router, private readonly oauthService: OAuthService) { 
     // configure the OAuth service
     oauthService.configure({
       issuer: "https://accounts.google.com",
@@ -107,6 +108,7 @@ export class UserResourceService implements OnInit {
       if (!force) {
 
         if (!confirm("[WARN] Session expired! Log in again?")) {
+          this.rt.navigate(['signin'])
           return null
         }
 

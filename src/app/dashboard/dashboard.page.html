@@ -8,20 +8,22 @@
   <div class="background"></div>
   <div class="white-fade"></div>
 
-  <div class="foreground" style="display: flex; flex-direction: column; height: calc(100vh - 10px); margin-bottom: 10px;">
+  <div class="foreground" style="display: flex; flex-direction: column; height: calc(100% - 10px); margin-bottom: 10px;">
     <ion-card style="background: transparent; box-shadow: none; ">
       <ion-card-title class="white-text text-shadow text-title">Greetings, <strong>{{username}}!</strong></ion-card-title>
     </ion-card>
 
     <!-- Goal tracker board -->
-    <ion-card class="card-margin card-padding" style="height: 140px;">
-      <ion-card-subtitle>Get motivated!</ion-card-subtitle>
-      <ion-card-content [ngSwitch]="hasStudyGoal" style="padding-left: 0px;">
-        <ion-list *ngSwitchCase=true>
+    <ion-card class="card-margin card-padding" style="height: 140px; min-height: 140px;">
+      <ion-card-subtitle *ngIf="!hasStudyGoal && noteList.length!=0">Get motivated!</ion-card-subtitle>
+      <ion-card-subtitle *ngIf="noteList.length==0">Let's get started!</ion-card-subtitle>
+
+      <ion-card-content style="padding-left: 0px;">
+        <ion-list *ngIf="hasStudyGoal && noteList.length!=0">
 
         </ion-list>
         
-        <ion-grid (click)="navigateToGoalSetter()"  *ngSwitchCase="false">
+        <ion-grid (click)="navigateToGoalSetter()"  *ngIf="!hasStudyGoal && noteList.length!=0">
           <ion-row>
           <ion-col size="auto" class="ion-align-self-center">
             <!-- <ion-icon style="font-size: 64px;"  src="../../assets/icon/bullseye.svg"></ion-icon> -->
@@ -33,6 +35,18 @@
         </ion-row>
         </ion-grid>
         
+        
+        <ion-grid (click)="create_note(true)" *ngIf="noteList.length==0">
+          <ion-row>
+          <ion-col size="auto" class="ion-align-self-center">
+            <!-- <ion-icon style="font-size: 64px;"  src="../../assets/icon/bullseye.svg"></ion-icon> -->
+            <img style="width: 60px;" src="../../assets/icon/bullseye.webp" />
+          </ion-col>
+          <ion-col style="flex-grow: 1; margin-left: 5px;" class="ion-align-self-center">
+            <ion-card-title style="font-size: large;">Upload some study notes and start your <b>first revision!</b></ion-card-title>
+          </ion-col>
+        </ion-row>
+        </ion-grid>
       
       </ion-card-content>
     </ion-card>
@@ -64,9 +78,9 @@
     </ion-card>
 
     <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="padding-bottom:48px; padding-right:10px">
-      <ion-fab-button (click)="create_note()">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
+      <ion-button shape="round" size="large" (click)="create_note()">
+        <ion-icon name="add"></ion-icon><b style="font-size:medium;"> Create...</b>
+      </ion-button>
     </ion-fab>
 
     <!-- Note Viewer Modal -->

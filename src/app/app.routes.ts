@@ -23,7 +23,7 @@ export const routes: Routes = [
     loadComponent: () => import('./dashboard/dashboard.page').then( m => m.DashboardPage)
   },
   {
-    path: 'docs-edit/:id',
+    path: 'docs-edit/:id/:auto_redir',
     loadComponent: () => import('./docs-edit/docs-edit.page').then( m => m.DocsEditPage)
   },
   {
