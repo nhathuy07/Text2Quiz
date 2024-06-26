@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController, LoadingController, IonSelect, IonSelectOption, IonItem, IonPopover, IonLabel, IonButtons, IonIcon, IonButton, IonCol, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonModal, LoadingController, IonSelect, IonSelectOption, IonItem, IonPopover, IonLabel, IonButtons, IonIcon, IonButton, IonCol, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import * as ionIcons from 'ionicons/icons'
 import { addIcons } from 'ionicons';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './docs-edit.page.html',
   styleUrls: ['./docs-edit.page.scss'],
   standalone: true,
-  imports: [IonSelect, IonSelectOption, IonItem, IonPopover,IonLabel, IonButtons, IonIcon, IonCol, IonButton, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
+  imports: [IonModal, IonSelect, IonSelectOption, IonItem, IonPopover,IonLabel, IonButtons, IonIcon, IonCol, IonButton, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
 
 })
 
@@ -32,6 +32,9 @@ export class DocsEditPage implements OnInit {
   // @ts-ignore
   @ViewChild("rte") rte: ElementRef<HTMLDivElement>;
 
+  // @ts-ignore
+  @ViewChild("NoteGeneratorModal") NoteGeneratorModal: HTMLIonModalElement;
+
   private _uploadtype: string = ""
 
   public note_name: string = "";
@@ -40,6 +43,8 @@ export class DocsEditPage implements OnInit {
   public note_language: string = "";
 
   private walkthrough_mode: boolean = false;
+
+  public isNoteGeneratorModalOpened = false;
 
   private note_keywords: Set<string> = new Set<string>;
 
@@ -436,7 +441,10 @@ export class DocsEditPage implements OnInit {
       this.inputfile.nativeElement.setAttribute("accept", ".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.txt,.md, .rtf,")
       this.inputfile.nativeElement.click()
     } else if (type == 'Auto-generated') {
-      let pr = prompt("Generate a study note about...")
+      this.fileChooserOptions.dismiss()
+      this.isNoteGeneratorModalOpened = true;
+
+      let pr = ""
       
       if (pr != null && pr.trim() != '') {
         // let resp = await CapacitorHttp.get({})
