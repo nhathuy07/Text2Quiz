@@ -2,6 +2,7 @@
 const fs = require('fs');
 
 const targetPath = './src/environments/environment.ts';
+const targetPath2 = './src/environments/environment.ts';
 const environmentTemplatePath = './src/environments/environment.template.ts';
 
 // Read environment variables
@@ -21,5 +22,5 @@ template = template.replace("<gapi_scopes>", process.env.GAPI_SCOPES);
 
 // Write environment file
 fs.writeFileSync(targetPath, template);
-
+fs.writeFileSync(targetPath2, template);
 console.log(`Generated environment.ts at ${targetPath}`);
