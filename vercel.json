@@ -12,12 +12,6 @@
         }
       }
     ],
-  "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "angular.json"
-      }
-    ],
   "headers": [
     {
       "source": "/(.*)\\.ttf",
