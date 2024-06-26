@@ -3,6 +3,14 @@
       {
         "src": "scripts/generate-env.js",
         "use": "@vercel/node"
+      },
+      {
+        "src": "angular.json",
+        "use": "@angular/cli",
+        "config": {
+          "root": ".",
+          "buildCommand": "ng build --configuration production"
+        }
       }
     ],
   "headers": [
