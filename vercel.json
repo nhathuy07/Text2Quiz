@@ -6,11 +6,7 @@
       },
       {
         "src": "angular.json",
-        "use": "@angular/cli",
-        "config": {
-          "root": ".",
-          "buildCommand": "ng build --configuration production"
-        }
+        "use": "@vercel/static-build"
       }
     ],
   "headers": [
