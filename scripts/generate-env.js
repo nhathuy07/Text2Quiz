@@ -2,7 +2,7 @@
 const fs = require('fs');
 
 const targetPath = './src/environments/environment.ts';
-const targetPath2 = './src/environments/environment.ts';
+const targetPath2 = './src/environments/environment.prod.ts';
 const environmentTemplatePath = './src/environments/environment.template.ts';
 
 // Read environment variables
