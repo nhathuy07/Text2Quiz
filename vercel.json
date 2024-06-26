@@ -1,4 +1,23 @@
 {
+  "builds": [
+      {
+        "src": "scripts/generate-env.js",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "angular.json",
+        "use": "@angular-builders/custom-builder:browser",
+        "config": {
+          "buildTarget": "app:build:production"
+        }
+      }
+    ],
+  "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "angular.json"
+      }
+    ],
   "headers": [
     {
       "source": "/(.*)\\.ttf",
@@ -36,5 +55,5 @@
         }
       ]
     }
-  ]
+    ]
 }
