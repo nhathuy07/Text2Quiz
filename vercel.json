@@ -1,14 +1,4 @@
 {
-  "builds": [
-      {
-        "src": "scripts/generate-env.js",
-        "use": "@vercel/node"
-      },
-      {
-        "src": "angular.json",
-        "use": "@vercel/static-build"
-      }
-    ],
   "headers": [
     {
       "source": "/(.*)\\.ttf",
