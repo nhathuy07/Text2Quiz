@@ -3,13 +3,6 @@
       {
         "src": "scripts/generate-env.js",
         "use": "@vercel/node"
-      },
-      {
-        "src": "angular.json",
-        "use": "@angular-devkit/build-angular:dev-server",
-        "config": {
-          "buildTarget": "app:build:production"
-        }
       }
     ],
   "headers": [
