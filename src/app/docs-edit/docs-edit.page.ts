@@ -45,6 +45,8 @@ export class DocsEditPage implements OnInit {
   private walkthrough_mode: boolean = false;
 
   public isNoteGeneratorModalOpened = false;
+  public noteGeneratorModalPrompt: string = "";
+  public noteGeneratorModalLang: string = "Vietnamese";
 
   private note_keywords: Set<string> = new Set<string>;
 
@@ -106,6 +108,8 @@ export class DocsEditPage implements OnInit {
     )
     // this.quill_editor.editorElem = quill_rte.nativeElement
     // load existing subjects
+    this.noteGeneratorModalLang = ""
+    this.noteGeneratorModalPrompt = ""
     console.log("walkthrough mode", this.walkthrough_mode)
     await this.getExistingSubjects()
 
@@ -425,7 +429,30 @@ export class DocsEditPage implements OnInit {
     }
   }
 
+  noteGeneratorModalChangeLang(event:any) {
+    this.noteGeneratorModalLang = event.detail.value;
+  }
 
+  async MLGenerateStudyNote() {
+
+    const loading = await this.presentLoading()
+
+    let r = await CapacitorHttp.post(
+      {
+        url: `${environment.BACKEND_LOC}/llmGenerateText`,
+        data: {"prompt": this.noteGeneratorModalPrompt, "lang": this.noteGeneratorModalLang},
+      }
+    )
+
+    await loading.dismiss()
+
+    if (!r.status.toString().startsWith('2')) {
+      alert(`Operation failed (${r.status})`)
+      return;
+    }
+
+    this.rte.nativeElement.insertAdjacentHTML("beforeend", `<br/>${r.data}`)
+  }
 
   async RTEOpenFileDialog(type: string) {
 
@@ -443,12 +470,6 @@ export class DocsEditPage implements OnInit {
     } else if (type == 'Auto-generated') {
       this.fileChooserOptions.dismiss()
       this.isNoteGeneratorModalOpened = true;
-
-      let pr = ""
-      
-      if (pr != null && pr.trim() != '') {
-        // let resp = await CapacitorHttp.get({})
-      }
     } 
     else {
       alert("feature not implemented")
@@ -457,6 +478,19 @@ export class DocsEditPage implements OnInit {
   }
 
   async RTEHandleFileUpload(event: Event | any) {
+    const l = await this.presentLoading()
+    try {
+      await this._handleFileUpload(event)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      l.dismiss()
+    }
+
+    
+  }
+
+  async _handleFileUpload(event: Event | any) {
 
     let files: Array<File> = event.target.files
     let content = []

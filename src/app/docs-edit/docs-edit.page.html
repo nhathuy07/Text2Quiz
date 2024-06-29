@@ -145,12 +145,12 @@
         <ng-template>
           <div style="padding: 12px;">
             <ion-label>Generate a study note about...</ion-label>
-            <ion-input></ion-input>
-            <ion-select #language interface="popover" label="in" justify="start" value="Vietnamese">
+            <ion-input [(ngModel)]="noteGeneratorModalPrompt"></ion-input>
+            <ion-select #language interface="popover" label="in" justify="start" value="Vietnamese" (ionChange)="noteGeneratorModalChangeLang($event)">
               <ion-select-option value="Vietnamese">Tiếng Việt</ion-select-option>
               <ion-select-option value="English">English</ion-select-option>
             </ion-select>
-            <ion-button>Generate!</ion-button>
+            <ion-button (click)="MLGenerateStudyNote()">Generate!</ion-button>
           </div>
           
         </ng-template>
