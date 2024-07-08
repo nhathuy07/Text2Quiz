@@ -127,7 +127,7 @@ export class FlashcardsPage implements OnInit {
     .then((dataUrl) => {
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = 'my-component.png';
+      link.download = `flashcards.png`;
       link.click();
     })
     .catch((error) => {
