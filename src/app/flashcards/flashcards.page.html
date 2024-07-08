@@ -10,8 +10,50 @@
 
 <ion-content [scrollY]="acceptScroll" [fullscreen]="true">
 
-  <ion-modal>
+  <ion-modal #flashcardViewerModal [isOpen]="flashcardViewerModalShown">
     <ng-template>
+      <ion-card-title class="ion-padding">
+        Flashcard revision
+      </ion-card-title>
+      <div style="height: calc(100% - 20px); overflow-y: scroll;">
+        <div #flashcardListDiv style="overflow-y:visible;">
+        
+        <ion-list #flashcardList *ngIf="isResourceReady">
+          <ion-item *ngFor="let k of keywords | keyvalue">
+            <ion-card class="ion-padding">
+
+              <ion-grid>
+                <ion-row>
+                  <ion-col style="width: calc(30%);">
+                    <img width="100%" style="padding-right: 10px;" src="{{getImgLinkFromDef(k.value)}}"/>
+                  </ion-col>
+                  <ion-col style="min-width: 62%;">
+                    <ion-card-title>{{k.key}}</ion-card-title>
+                    <ion-card-content style="padding: 0px;">
+                      
+                      <ion-label style="padding-top: 10px;">{{k.value}}</ion-label>
+                    
+                    </ion-card-content>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+              
+            </ion-card>
+          </ion-item>
+        </ion-list>
+      </div>
+      </div>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" (click)="exitToDashboard()">Done!</ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" fill="outline" (click)="exportFlashcardList()">Export as image</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
       
     </ng-template>
   </ion-modal>

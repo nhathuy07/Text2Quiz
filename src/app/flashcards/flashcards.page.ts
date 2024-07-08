@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {IonModal, IonButtons, IonButton,IonIcon, IonGrid, IonCol, IonRow, IonList, IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {IonLabel,IonCardContent,IonCardTitle, IonModal, IonButtons, IonButton,IonIcon, IonGrid, IonCol, IonRow, IonList, IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 // import { AfterViewInit } from '@angular/core';
 import { GestureController } from '@ionic/angular'
 import { ActivatedRoute } from '@angular/router';
@@ -17,12 +17,13 @@ import { addIcons } from 'ionicons';
 import {IonImg} from '@ionic/angular/standalone'
 import * as icons from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
+import domtoimage from 'dom-to-image'
 @Component({
   selector: 'app-flashcards',
   templateUrl: './flashcards.page.html',
   styleUrls: ['./flashcards.page.scss'],
   standalone: true,
-  imports: [IonModal, IonImg ,IonButtons, IonButton,IonIcon,IonGrid,IonRow,IonCol, IonList,IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonCardContent,IonLabel,IonCardTitle,IonModal, IonImg ,IonButtons, IonButton,IonIcon,IonGrid,IonRow,IonCol, IonList,IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class FlashcardsPage implements OnInit {
   // @ts-ignore
@@ -32,6 +33,15 @@ export class FlashcardsPage implements OnInit {
   // @ts-ignore
   @ViewChild('flashcardImg', {read: ElementRef}) flashcardImg: ElementRef
 
+  // @ts-ignore
+  @ViewChild('flashcardViewerModal') flashcardViewerModal: HTMLIonModalElement
+
+  // @ts-ignore
+  //@ViewChild('flashcardList') flashcardList : ElementRef
+
+  // @ts-ignore
+  @ViewChild('flashcardListDiv', {read: ElementRef}) flashcardListDiv: ElementRef
+  
   gestures: Gesture[] = []
   id: string;
   lang: string;
@@ -51,6 +61,8 @@ export class FlashcardsPage implements OnInit {
   correct:number =0;
   finished:boolean=false;
   currentA:string="..............."
+
+  flashcardViewerModalShown =false;
 
   constructor(private readonly ur: UserResourceService, private ar: ActivatedRoute, private gestureCtrl: GestureController, private changeDetectorRef: ChangeDetectorRef, private rt: Router) {
     this.id = ""
@@ -93,12 +105,35 @@ export class FlashcardsPage implements OnInit {
     this.currentA ="..............."
     this.updateImg()
     this.isResourceReady = true
+
+
+    //this.flashcardViewerModalShown = true;
   }
   
   async ngOnInit(): Promise<void> {
 
     await this.pageInit()
     this.updateGestures()
+  }
+
+  async exitToDashboard() {
+    await this.flashcardViewerModal.dismiss()
+    await this.rt.navigate(['dashboard'])
+  }
+
+  async exportFlashcardList() {
+    console.log(this.flashcardListDiv)
+    domtoimage.toPng(this.flashcardListDiv.nativeElement, { bgcolor: '#fff' }) // Optional background color
+    .then((dataUrl) => {
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'my-component.png';
+      link.click();
+    })
+    .catch((error) => {
+      console.error('Error exporting image:', error);
+    });
+
   }
 
   updateImg() {
@@ -118,6 +153,10 @@ export class FlashcardsPage implements OnInit {
     if (this.qIndex >= this.qs.length) {
       this.finished = true
       alert(`Flashcard session finished!\n\nCorrect:${this.correct}\nRetries:${this.retries}\nIncorrect/Skipped:${this.keywords.size - this.correct}`)
+      
+      // show learnt flashcards
+      this.flashcardViewerModalShown = true
+      
       this.rt.navigate(['dashboard'])
     } else {
       this.currentQ = this.qs[this.qIndex]
@@ -243,6 +282,15 @@ export class FlashcardsPage implements OnInit {
     return ret
   }
 
+  getImgLinkFromDef(d:string):string {
+    if (!d) {
+      return "https://t4.ftcdn.net/jpg/05/17/53/57/360_F_517535712_q7f9QC9X6TQxWi6xYZZbMmw5cnLMr279.jpg"
+    }
+    // @ts-ignore
+    if (this.imgs.get(d)) return this.imgs.get(d)
+    return "https://t4.ftcdn.net/jpg/05/17/53/57/360_F_517535712_q7f9QC9X6TQxWi6xYZZbMmw5cnLMr279.jpg"
+  }
+
   async fetchFlashcards(id:string, lang:string) {
     // let __kw = new Map<string, string>()
     // let __imgs = new Map<string, string>()
@@ -252,10 +300,12 @@ export class FlashcardsPage implements OnInit {
     // console.log(_req)
     for (let i = 0; i < _req.data.defs.length; i++) {
       this.keywords.set(_req.data.defs[i][0], _req.data.defs[i][1])
+      
       this.imgs.set(_req.data.defs[i][1], _req.data.imgs[i][1])
     }
     // this.imgs = _req.data.imgs
-    console.log(this.imgs)
+    console.log(this.keywords.entries())
+    // console.log(this.imgs)
   }
   
 }
