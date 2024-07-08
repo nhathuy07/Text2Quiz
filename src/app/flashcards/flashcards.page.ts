@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {IonButtons, IonButton,IonIcon, IonGrid, IonCol, IonRow, IonList, IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {IonModal, IonButtons, IonButton,IonIcon, IonGrid, IonCol, IonRow, IonList, IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 // import { AfterViewInit } from '@angular/core';
 import { GestureController } from '@ionic/angular'
 import { ActivatedRoute } from '@angular/router';
@@ -22,7 +22,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './flashcards.page.html',
   styleUrls: ['./flashcards.page.scss'],
   standalone: true,
-  imports: [IonImg,IonButtons, IonButton,IonIcon,IonGrid,IonRow,IonCol, IonList,IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonModal, IonImg ,IonButtons, IonButton,IonIcon,IonGrid,IonRow,IonCol, IonList,IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class FlashcardsPage implements OnInit {
   // @ts-ignore
