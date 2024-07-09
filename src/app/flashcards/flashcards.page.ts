@@ -157,7 +157,6 @@ export class FlashcardsPage implements OnInit {
       // show learnt flashcards
       this.flashcardViewerModalShown = true
       
-      this.rt.navigate(['dashboard'])
     } else {
       this.currentQ = this.qs[this.qIndex]
       this.updateImg()
