@@ -18,12 +18,15 @@ import {IonImg} from '@ionic/angular/standalone'
 import * as icons from 'ionicons/icons';
 import { environment } from 'src/environments/environment';
 import domtoimage from 'dom-to-image'
+
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-flashcards',
   templateUrl: './flashcards.page.html',
   styleUrls: ['./flashcards.page.scss'],
   standalone: true,
-  imports: [IonCardContent,IonLabel,IonCardTitle,IonModal, IonImg ,IonButtons, IonButton,IonIcon,IonGrid,IonRow,IonCol, IonList,IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [TranslateModule, IonCardContent,IonLabel,IonCardTitle,IonModal, IonImg ,IonButtons, IonButton,IonIcon,IonGrid,IonRow,IonCol, IonList,IonItem, IonCard, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class FlashcardsPage implements OnInit {
   // @ts-ignore
@@ -64,7 +67,7 @@ export class FlashcardsPage implements OnInit {
 
   flashcardViewerModalShown =false;
 
-  constructor(private readonly ur: UserResourceService, private ar: ActivatedRoute, private gestureCtrl: GestureController, private changeDetectorRef: ChangeDetectorRef, private rt: Router) {
+  constructor(private translate: TranslateService, private readonly ur: UserResourceService, private ar: ActivatedRoute, private gestureCtrl: GestureController, private changeDetectorRef: ChangeDetectorRef, private rt: Router) {
     this.id = ""
     this.lang = ""
     addIcons(icons)
@@ -80,6 +83,7 @@ export class FlashcardsPage implements OnInit {
 
   async pageInit() {
 
+    this.skipBtnLabel = this.translate.instant("skip1")
     this.ar.params.subscribe( (p) => {
       this.id = p['id'],
       this.lang = p['lang']
@@ -113,6 +117,7 @@ export class FlashcardsPage implements OnInit {
   async ngOnInit(): Promise<void> {
 
     await this.pageInit()
+    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : "en")
     this.updateGestures()
   }
 
@@ -132,6 +137,7 @@ export class FlashcardsPage implements OnInit {
     })
     .catch((error) => {
       console.error('Error exporting image:', error);
+      alert(`${this.translate.instant('imgExportErr')}: ${error}`)
     });
 
   }
@@ -149,7 +155,7 @@ export class FlashcardsPage implements OnInit {
   }
 
   nextQ() {
-    this.skipBtnLabel = "Skip"
+    this.skipBtnLabel = this.translate.instant("skip1")
     this.dropzone.nativeElement.style.color = '#1b2783'
     this.dropzone.nativeElement.style.backgroundColor = '#ffffff'
     this.qRetried=false;
@@ -158,7 +164,9 @@ export class FlashcardsPage implements OnInit {
 
     if (this.qIndex >= this.qs.length) {
       this.finished = true
-      alert(`Flashcard session finished!\n\nCorrect:${this.correct}\nRetries:${this.retries}\nIncorrect/Skipped:${this.keywords.size - this.correct}`)
+
+
+      alert(`${this.translate.instant('flashcardFin_1')}\n\n${this.translate.instant('flashcardFin_2')}${this.correct}\n${this.translate.instant('flashcardFin_3')}${this.retries}\n${this.translate.instant('flashcardFin_4')}${this.keywords.size - this.correct}`)
       
       // show learnt flashcards
       this.flashcardViewerModalShown = true
@@ -183,7 +191,7 @@ export class FlashcardsPage implements OnInit {
       }
         return true
     } else {
-      alert('Try again :(')
+      alert(this.translate.instant("wrong2"))
       if (this.qRetried) {
         this.retries+=1
       }
@@ -243,7 +251,7 @@ export class FlashcardsPage implements OnInit {
               this.correct+=1
 
               // console.log(this.keys.splice(i, 1)[0])
-              this.skipBtnLabel = "Next >>"
+              this.skipBtnLabel = `${this.translate.instant('nextPage')} >>`
               this.currentA = spl
               this.dropzone.nativeElement.style.color = '#ffffff'
               this.dropzone.nativeElement.style.backgroundColor = '#49a17d'
