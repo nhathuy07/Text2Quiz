@@ -73,7 +73,7 @@
       <ion-grid>
         <ion-row style="height: 145px; margin-left: 5px;">
           <ion-col style="max-width: fit-content; padding: 0px;" *ngIf="showImage">
-            <img #flashcardImg style="padding: 0px;" src="https://t4.ftcdn.net/jpg/05/17/53/57/360_F_517535712_q7f9QC9X6TQxWi6xYZZbMmw5cnLMr279.jpg" height="130px"/>
+            <img #flashcardImg style="padding: 0px;" src={{imgs.get(currentQ)}} height="130px"/>
           </ion-col>
           <ion-col style="padding: 10px ;" *ngIf="isResourceReady">
             <h3><b>{{currentA}}</b></h3><br/>
@@ -83,7 +83,7 @@
         </ion-row>
         <ion-row>
           <ion-col style="max-width: fit-content;">
-            <button (click)="showImage=!showImage" style="padding: 10px;">Toggle image</button>
+            <button (click)="toggleImg()" style="padding: 10px;">Toggle image</button>
           </ion-col>
           <ion-col style="width:fit-content">
             <button (click)="nextQ()" style="padding: 10px;">{{skipBtnLabel}}</button>

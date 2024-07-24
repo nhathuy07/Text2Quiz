@@ -137,9 +137,15 @@ export class FlashcardsPage implements OnInit {
   }
 
   updateImg() {
-    console.log(typeof(this.imgs))
-
+    console.log(this.imgs.get(this.currentQ))
+    if (this.imgs.get(this.currentQ) == undefined) {
+      this.flashcardImg.nativeElement.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/310px-Placeholder_view_vector.svg.png"
+    }
     this.flashcardImg.nativeElement.src = this.imgs.get(this.currentQ)
+  }
+
+  toggleImg() {
+    this.showImage = !this.showImage
   }
 
   nextQ() {
