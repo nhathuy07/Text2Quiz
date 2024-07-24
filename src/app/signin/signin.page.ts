@@ -31,7 +31,7 @@ export class SigninPage implements OnInit {
   
   ngOnInit() {
 
-  //  this.translate.use('en')
+    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : "en")
 
    if (this.userResource.getAccessToken() == true) {
     this.router.navigate(['dashboard'])

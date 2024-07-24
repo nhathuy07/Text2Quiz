@@ -18,7 +18,7 @@
     <ion-card style="padding: 10px; margin: 10px;" >
     
       <img class="img-width-350 img-center"/>
-      <ion-card-subtitle style="padding-left: 10px; padding-top: 10px;">Choose the best answer</ion-card-subtitle>
+      <ion-card-subtitle style="padding-left: 10px; padding-top: 10px;">{{'revisionPrompt' | translate}}</ion-card-subtitle>
       <ion-card-title style="padding: 10px;">{{get_current_prompt()}}</ion-card-title>
       <div [ngSwitch]="get_question_type()">
   
@@ -55,13 +55,13 @@
 
         <!-- Open-ended question -->
         <ion-card-content style="padding: 10px; max-height: calc(100%-50px); overflow-y: scroll;" *ngSwitchCase="'OPEN'">
-          <ion-input [(ngModel)]="cur_state.response[i]" *ngFor="let o of cur_state.response; let i = index; trackBy:__track_items" fill="outline" placeholder="Enter your answer..."></ion-input>
+          <ion-input [(ngModel)]="cur_state.response[i]" *ngFor="let o of cur_state.response; let i = index; trackBy:__track_items" fill="outline" placeholder="{{ 'enterAnswerPrompt' | translate }}"></ion-input>
           <ion-button expand="block" shape="round" (click)=" check_response()">Submit!</ion-button>
         
         </ion-card-content>
         <!-- Open-ended FITB -->
         <ion-card-content style="padding: 10px; max-height: calc(100%-50px); overflow-y: scroll;" *ngSwitchCase="'OPEN_FITB'">
-          <ion-input [(ngModel)]="cur_state.response[i]" *ngFor="let o of cur_state.response; let i = index; trackBy:__track_items" fill="outline" placeholder="Enter your answer..."></ion-input>
+          <ion-input [(ngModel)]="cur_state.response[i]" *ngFor="let o of cur_state.response; let i = index; trackBy:__track_items" fill="outline" placeholder="{{ 'enterAnswerPrompt' | translate }}"></ion-input>
           <ion-button expand="block" shape="round" (click)=" check_response()">Submit!</ion-button>
         
         </ion-card-content>
@@ -69,18 +69,18 @@
         <!-- TODO: Amendment question type -->
         <ion-card-content style="padding: 10px;" *ngSwitchCase="'AMEND'">
           <ion-textarea fill="outline" [autoGrow]="true" [(ngModel)]="cur_state.response[0]"></ion-textarea>
-          <ion-button expand="block" shape="round" (click)=" check_response()">Submit!</ion-button>
+          <ion-button expand="block" shape="round" (click)=" check_response()">{{'submitBtn' | translate}}</ion-button>
         </ion-card-content>
         
       </div>
 
       <!-- Flip to next question button -->
       <div style="display: flex; float: left;">
-        <ion-button fill="clear" (click)="prev_q()"> <ion-icon slot="start" name="arrow-back-outline"></ion-icon> Previous</ion-button>
+        <ion-button fill="clear" (click)="prev_q()"> <ion-icon slot="start" name="arrow-back-outline"></ion-icon> {{'prevPage' | translate}}</ion-button>
       </div>
 
       <div style="display: flex; float: right; ">
-        <ion-button fill="clear" (click)="next_q()"><ion-icon slot="end" name="arrow-forward-outline"></ion-icon> Next</ion-button>
+        <ion-button fill="clear" (click)="next_q()"><ion-icon slot="end" name="arrow-forward-outline"></ion-icon> {{'nextPage' | translate}}</ion-button>
       </div>
     </ion-card>
   </div>
@@ -108,7 +108,7 @@
 
             <ion-icon name="checkmark-circle"></ion-icon>
 
-          <strong>{{this.summary.correct}}&MediumSpace;</strong>({{this.summary.retried}} re-attempted)
+          <strong>{{this.summary.correct}}&MediumSpace;</strong>({{this.summary.retried}} {{'reAttemptLabel' | translate}})
         </ion-chip>
 
         <ion-chip color="danger">
@@ -124,7 +124,7 @@
       </ion-card-title>
 
       <ion-card *ngIf="summary.weak_points.length > 0" style="box-shadow: none; background-color: #ffc7c7; white-space: nowrap; min-height: 80px; max-height: 110px; overflow-x: scroll; padding: 12px">
-        <ion-card-subtitle>Weak points</ion-card-subtitle>
+        <ion-card-subtitle>{{'weakSpotsLabel' | translate}}</ion-card-subtitle>
         <ion-card-content style="padding: 0px;">
           <ion-chip color="danger" class="ion-padding" style="font-size: small; color: #a10000; min-width: fit-content; padding-top: 0px; padding-bottom: 0px;" *ngFor="let w of summary.weak_points; index as i" (click)="__show_paragraph_detail(i)">
             <ion-icon name="open-outline"></ion-icon>
@@ -134,7 +134,7 @@
       </ion-card>
 
       <ion-card *ngIf="summary.weak_points.length == 0" style="box-shadow: none; background-color: #e5faed; white-space: nowrap; min-height: 50px; max-height: 50px; overflow-x: scroll; padding: 12px">
-        <ion-card-subtitle style="color: #06a154;">No considerable weak points found!</ion-card-subtitle>
+        <ion-card-subtitle style="color: #06a154;">{{'noWeakSpots' | translate}}</ion-card-subtitle>
       </ion-card>
 
       <ion-card style="padding-top: 0px; height: calc(100% - 40px); overflow-y: scroll; box-shadow: none; height: 100%;">
@@ -157,9 +157,9 @@
 
       </ion-card>
 
-      <ion-button *ngIf="__weak_points_i.length != 0" shape="round" style="margin-left: 10px; margin-right: 10px;" (click)="__log_result_and_retry()" expand="block"> <ion-icon slot="start" name="barbell-outline"></ion-icon> Review weak points</ion-button>
-      <ion-button *ngIf="__weak_points_i.length != 0" shape="round" style="margin-left: 10px; margin-right: 10px;"  (click)="__log_result_and_exit()" expand="block" fill="outline">Finish!</ion-button>
-      <ion-button *ngIf="__weak_points_i.length == 0" shape="round" style="margin-left: 10px; margin-right: 10px;"  (click)="__log_result_and_exit()" expand="block">Finish!</ion-button>
+      <ion-button *ngIf="__weak_points_i.length != 0" shape="round" style="margin-left: 10px; margin-right: 10px;" (click)="__log_result_and_retry()" expand="block"> <ion-icon slot="start" name="barbell-outline"></ion-icon> {{'reviewWeakSpotsBtn' | translate}}</ion-button>
+      <ion-button *ngIf="__weak_points_i.length != 0" shape="round" style="margin-left: 10px; margin-right: 10px;"  (click)="__log_result_and_exit()" expand="block" fill="outline">{{'finishBtn' | translate}}</ion-button>
+      <ion-button *ngIf="__weak_points_i.length == 0" shape="round" style="margin-left: 10px; margin-right: 10px;"  (click)="__log_result_and_exit()" expand="block">{{'finishBtn' | translate}}</ion-button>
     </ng-template>
   </ion-modal>
 
