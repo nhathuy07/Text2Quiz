@@ -35,10 +35,6 @@ export const routes: Routes = [
     loadComponent: () => import('./goal-setter/goal-setter.page').then( m => m.GoalSetterPage)
   },
   {
-    path: 'drag-drop-testbed',
-    loadComponent: () => import('./drag-drop-testbed/drag-drop-testbed.page').then( m => m.DragDropTestbedPage)
-  },
-  {
     path: 'flashcards/:id/:lang',
     loadComponent: () => import('./flashcards/flashcards.page').then( m => m.FlashcardsPage)
   },

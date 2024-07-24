@@ -7,23 +7,32 @@ import { IonImg, IonGrid, IonRow, IonCol, IonCardTitle, IonCardContent, IonCardS
 import { UserResourceService } from '../user-resource.service';
 import { Router } from '@angular/router';
 
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+
 @Component({
   selector: 'app-signin',
   templateUrl: './signin.page.html',
   styleUrls: ['./signin.page.scss'],
   standalone: true,
-  imports: [IonImg, IonGrid, IonRow, IonCol, IonCardTitle, IonCardContent, IonCardSubtitle, IonLabel, IonCard, IonButton, IonSegmentButton,IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [TranslateModule, IonImg, IonGrid, IonRow, IonCol, IonCardTitle, IonCardContent, IonCardSubtitle, IonLabel, IonCard, IonButton, IonSegmentButton,IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 
 export class SigninPage implements OnInit {
 
-  constructor(private router: Router,  private userResource: UserResourceService) { 
+  constructor(
+    private router: Router,  
+    private userResource: UserResourceService,
+    private translate: TranslateService
+  ) { 
     // if (this.userResource.getAccessToken()) {
     //   this.router.navigate(['dashboard'])
     //  }
   }
   
   ngOnInit() {
+
+  //  this.translate.use('en')
+
    if (this.userResource.getAccessToken() == true) {
     this.router.navigate(['dashboard'])
    }

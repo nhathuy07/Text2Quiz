@@ -1,4 +1,4 @@
-import { enableProdMode } from '@angular/core';
+import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
@@ -9,8 +9,24 @@ import { environment } from './environments/environment';
 
 // Import OAuth2 authentication module
 // main.ts -- Angular 15+ version
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule, provideHttpClient } from '@angular/common/http';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { TranslateLoader , TranslateModule} from '@ngx-translate/core';
+
+import { TranslateHttpLoader } from '@ngx-translate/http-loader'
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n', '.json')
+}
+
+const translateConfig = {
+  defaultLanguage: 'en',
+  loader: {
+    provide: TranslateLoader,
+    useFactory: HttpLoaderFactory,
+    deps: [HttpClient]
+  }
+}
 
 if (environment.production) {
   enableProdMode();
@@ -22,7 +38,8 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular({mode: 'md'}),
     provideRouter(routes),
     provideHttpClient(),
-    provideOAuthClient()
+    provideOAuthClient(),
+    importProvidersFrom(HttpClientModule, TranslateModule.forRoot(translateConfig))
   ],
 });
 
