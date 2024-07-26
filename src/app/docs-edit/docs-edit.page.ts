@@ -10,13 +10,14 @@ import { ViewChild } from '@angular/core';
 import { CapacitorHttp } from '@capacitor/core';
 import { UserResourceService } from '../user-resource.service';
 import { environment } from 'src/environments/environment';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-docs-edit',
   templateUrl: './docs-edit.page.html',
   styleUrls: ['./docs-edit.page.scss'],
   standalone: true,
-  imports: [IonModal, IonSelect, IonSelectOption, IonItem, IonPopover,IonLabel, IonButtons, IonIcon, IonCol, IonButton, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
+  imports: [TranslateModule, IonModal, IonSelect, IonSelectOption, IonItem, IonPopover,IonLabel, IonButtons, IonIcon, IonCol, IonButton, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
 
 })
 
@@ -62,7 +63,7 @@ export class DocsEditPage implements OnInit {
 
   public availableSubjects: Set<string> = new Set<string>()
 
-   constructor(private ar: ActivatedRoute, private userResource: UserResourceService, private router: Router, private loading_throbber: LoadingController) { 
+   constructor(private translate: TranslateService, private ar: ActivatedRoute, private userResource: UserResourceService, private router: Router, private loading_throbber: LoadingController) { 
 
     addIcons(ionIcons);
   }
@@ -70,7 +71,7 @@ export class DocsEditPage implements OnInit {
   async presentLoading() {
     // Show loading throbber while app loads data
     const loading = await this.loading_throbber.create({
-        message: 'Please wait...',
+        message: this.translate.instant('loadingMsg'),
         translucent: true
     });
     await loading.present();
@@ -97,6 +98,8 @@ export class DocsEditPage implements OnInit {
 
   async ngOnInit() {
     await this.pageInit()
+    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : 'en')
+  
   }
 
   async pageInit() {
@@ -161,19 +164,19 @@ export class DocsEditPage implements OnInit {
 
   validateFields(): boolean {
     if (this.note_name.length == 0 || this.note_subject.length == 0) {
-      alert("Title and subject can't be empty.")
+      alert(this.translate.instant("titleEmptyErr"))
       return false;
     }
 
     if (this.rte.nativeElement.textContent == null || this.rte.nativeElement.textContent == "") {
-      alert("Note can't be empty.")
+      alert(this.translate.instant("noteEmptyErr"))
       return false;
     }
     return true;
   }
 
   newSubject(): boolean {
-    let res = prompt("What's your new subject called?")
+    let res = prompt(this.translate.instant('newSubjectPrompt'))
     if (res != null && res != "") {
       this.note_subject = res ? res : ""
       this.availableSubjects.add(this.note_subject)
@@ -183,7 +186,7 @@ export class DocsEditPage implements OnInit {
   }
 
   exitEditPage() {
-    if (confirm("Discard changes?")) {
+    if (confirm(this.translate.instant('discardPrompt'))) {
       this.router.navigate(['dashboard'])
     }
   }
@@ -239,14 +242,14 @@ export class DocsEditPage implements OnInit {
       this.note_id = req.data.id
       // console.log(this.note_id)
 
-      alert("Uploaded successfully!")
+      alert(this.translate.instant('uploadSuccess'))
       if (this.walkthrough_mode) {
         this.router.navigate(['dashboard'], {queryParams: {redir_id: this.note_id}})
       } else {
         this.router.navigate(['dashboard'])
       }
     } else {
-      alert(`Uploading failed (${req.status})`)
+      alert(`${this.translate.instant('uploadFailed')} (${req.status})`)
     }
   }
 
@@ -555,7 +558,7 @@ export class DocsEditPage implements OnInit {
           
         }
       } else {
-        alert(`Error caught while converting file(s) (${res.status})`)
+        alert(`${this.translate.instant('fileConvertErr')} (${res.status})`)
       }
 
   }

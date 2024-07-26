@@ -2,7 +2,7 @@
 
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-input id="name_input" [(ngModel)]="note_name" autocapitalize="on" class="input-height" style="font-weight: bold;" fill="solid" placeholder="Give your note a title..."></ion-input>
+    <ion-input id="name_input" [(ngModel)]="note_name" autocapitalize="on" class="input-height" style="font-weight: bold;" fill="solid" placeholder="{{'titlePrompt' | translate}}"></ion-input>
 
     <ion-buttons slot="end">
       <ion-button  (click)="uploadOrUpdateNote()"> <ion-icon name="save-outline"></ion-icon> </ion-button>
@@ -34,11 +34,11 @@
         <!-- <ion-input #subjectField [(ngModel)]="note_subject" fill="outline" placeholder="Subject..."></ion-input> -->
         
         <!-- Subject chooser -->
-        <ion-select (ionChange)="setTextSubject($event)" label-placement="floating" size="small" [(ngModel)]="note_subject" label=" " justify="start" fill="outline" interface="popover" label="Subject">
+        <ion-select (ionChange)="setTextSubject($event)" label-placement="floating" size="small" [(ngModel)]="note_subject" label=" " justify="start" fill="outline" interface="popover" label="{{'subjectLabel' | translate}}">
           <ion-select-option *ngFor="let subject of availableSubjects" [value]="subject">{{subject}}</ion-select-option>
           <ion-select-option>
             <ion-icon name="add"></ion-icon>
-            <strong>Add...</strong>
+            <strong>{{'addLabel' | translate}}</strong>
           </ion-select-option>
         </ion-select>
 
@@ -83,7 +83,7 @@
           <span>
             <button #highlight (click)="RTEHighlightToggle($event)" activated="false" class="rtebtn special" style="max-width: 140px; min-width: 110px; text-align: left;">
               <ion-icon color="primary" name="bookmark-outline"></ion-icon>
-              Highlight
+              {{'hiliteLabel' | translate}}
             </button>
           </span>
 
@@ -93,7 +93,7 @@
           <!-- This btn will be linked to the hidden file button -->
           <button activated="false" id="attachFile" class="rtebtn special" style="min-width: 100px; max-width: 100px; text-align: left;">
             <ion-icon color="primary" name="document-attach-outline"></ion-icon>
-            Insert...
+            {{'insertLabel' | translate}}
           </button>
 
           <ion-popover #fileChooserOptions trigger="attachFile" triggerAction="click">
@@ -103,17 +103,17 @@
               
               <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Auto-generated')">
                 <ion-icon slot="start" name="bulb-outline"></ion-icon>
-                <span><b>Auto-generated text</b></span>
+                <span><b>{{'autoGenLabel' | translate}}</b></span>
               </ion-button>
               
               <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('OCR')">
                 <ion-icon slot="start" name="scan-outline"></ion-icon>
-                <span><b>Text from image </b></span>
+                <span><b>{{'ocrLabel' | translate}}</b></span>
               </ion-button>
 
               <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Insert')">
                 <ion-icon slot="start" name="document-text-outline"></ion-icon>
-                <span><b>Documents </b></span>
+                <span><b>{{'docUploadLabel' | translate}} </b></span>
               </ion-button>
               
               <!-- <ion-button color="default" fill="clear" style="--box-shadow:none" (click)="RTEOpenFileDialog('Transcript')">
@@ -136,7 +136,7 @@
       <!-- Highlighted keywords -->
         
       <ion-card style="box-shadow: none;">
-        <ion-card-subtitle>Keywords:</ion-card-subtitle>
+        <ion-card-subtitle>{{'keywordsLabel' | translate}}</ion-card-subtitle>
         <ion-text style="font-weight: bold; color: rgb(115, 108, 253); max-height: 42px; overflow-y: scroll;">{{returnSerializedKeywords()}}</ion-text>
       </ion-card>
 
@@ -144,13 +144,13 @@
       <ion-modal (willDismiss)="isNoteGeneratorModalOpened=false" [isOpen]="isNoteGeneratorModalOpened"  #NoteGeneratorModal style="--backdrop-opacity:0.7; --width:calc(100% - 20px); --height:calc(fit-content + 20px); --border-radius:15px; --max-width:800px">
         <ng-template>
           <div style="padding: 12px;">
-            <ion-label>Generate a study note about...</ion-label>
+            <ion-label>{{'autoGenPrompt' | translate}}</ion-label>
             <ion-input [(ngModel)]="noteGeneratorModalPrompt"></ion-input>
-            <ion-select #language interface="popover" label="in" justify="start" value="Vietnamese" (ionChange)="noteGeneratorModalChangeLang($event)">
+            <ion-select #language interface="popover" label="{{'inLbl' | translate}}" justify="start" value="Vietnamese" (ionChange)="noteGeneratorModalChangeLang($event)">
               <ion-select-option value="Vietnamese">Tiếng Việt</ion-select-option>
               <ion-select-option value="English">English</ion-select-option>
             </ion-select>
-            <ion-button (click)="MLGenerateStudyNote()">Generate!</ion-button>
+            <ion-button (click)="MLGenerateStudyNote()">{{'autoGenBtn' | translate}}</ion-button>
           </div>
           
         </ng-template>

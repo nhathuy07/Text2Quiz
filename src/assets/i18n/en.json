@@ -37,5 +37,25 @@
     "flashcardFin_1": "Flashcard session finished!",
     "flashcardFin_2": "Correct: ",
     "flashcardFin_3": "Retries: ",
-    "flashcardFin_4": "Incorrect/Skipped: "
+    "flashcardFin_4": "Incorrect/Skipped: ",
+    "titlePrompt": "Give your note a title...",
+    "subjectLabel": "Subject",
+    "addLabel": "Add...",
+    "hiliteLabel":"Highlight",
+    "insertLabel":"Insert...",
+    "autoGenLabel": "Auto-generated text",
+    "ocrLabel": "Text from image",
+    "docUploadLabel": "Documents",
+    "keywordsLabel": "Keywords:",
+    "autoGenPrompt": "Generate a study note about...",
+    "autoGenBtn": "Generate!",
+    "inLbl": "in",
+    "titleEmptyErr": "Title and subject can't be empty.",
+    "noteEmptyErr": "Note can't be empty.",
+    "newSubjectPrompt": "What's your new subject called?",
+    "discardPrompt": "Discard changes?",
+    "uploadSuccess": "Uploaded successfully!",
+    "uploadFailed": "Uploading failed",
+    "fileConvertErr": "Error caught while converting file(s)"
+
 }
