@@ -75,7 +75,7 @@ export class DashboardPage implements OnInit {
   async presentLoading() {
     // Show loading throbber while app loads data
     const loading = await this.loading_throbber.create({
-        message: 'Please wait...',
+        message: 'Loading...',
         translucent: true,
         
     });
@@ -84,6 +84,7 @@ export class DashboardPage implements OnInit {
 }
 
   async ionViewWillEnter() {
+    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : "en")
       // Show loading throbber while app loads data
       const loading = await this.presentLoading();
       try {
@@ -126,6 +127,8 @@ export class DashboardPage implements OnInit {
   }
 
   async pageInit() {
+    
+
     this.username = await this.userResource.getLoggedInUserName()
     this.noteList = await this.userResource.filterNotesBySubject("*")
     this.userSubjects = await this.userResource.getSubjectFilters()

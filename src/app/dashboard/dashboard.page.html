@@ -57,7 +57,7 @@
 
           <ion-row style="display: flex; flex-wrap: nowrap; overflow-x: scroll;">
             <ion-chip [outline]="true" class="special-yellow" style="border-color: #cc9610; border-width: 2px; color: #cc9610; font-weight: bold; margin-left: 0px; white-space: nowrap; min-width: 110px;">⭐ {{'focused' | translate}}</ion-chip>
-            <ion-chip [outline]="!(currentFilter=='*')" (click)="updateSubjectFilter('*')" style="white-space: nowrap; min-width:fit-content;">All</ion-chip>
+            <ion-chip [outline]="!(currentFilter=='*')" (click)="updateSubjectFilter('*')" style="white-space: nowrap; min-width:fit-content;">{{'all' | translate}}</ion-chip>
             <ion-chip [outline]="!(currentFilter==s)" (click)="updateSubjectFilter(s)" style="white-space: nowrap; min-width:fit-content;" *ngFor="let s of userSubjects">{{s}}</ion-chip>
           </ion-row>
           

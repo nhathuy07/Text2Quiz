@@ -13,9 +13,14 @@
     "reviewWeakSpotsBtn": "Review weak spots",
     "finishBtn": "Finish!",
     "loadingMsg": "Please wait...",
+    "returnToLogin": "Return to Login",
+    "newGoal": "New goal",
+    "invalidSession": "Invalid session. Please log in again.",
+    "redirSuccess": "Login successfully. Redirecting...",
     "dataLoadingErr": "Error loading data",
     "imgExportErr": "Error exporting flashcards",
-    "resourceFetchingErr": "Fetching resource failed",
+    "resourceFetchingErr": "Fetching content failed",
+    "sessionExpiredErr": "Session expired! Please log in again.",
     "correct": "Correct!",
     "correct1": "You got it right!",
     "partiallyCorrect": "Seems right!",
@@ -79,5 +84,7 @@
     "langChooser": "Generate quiz in:",
     "approxGradeMode": "Approximate grading mode (for open-ended questions).",
     "editBtn": "Edit",
-    "delBtn": "Delete"
+    "delBtn": "Delete",
+    "all": "All"
+
 }
