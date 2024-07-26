@@ -15,6 +15,8 @@ import { CapacitorHttp } from '@capacitor/core';
 import { environment } from 'src/environments/environment';
 import { LoadingController } from '@ionic/angular'
 
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+
 export interface QuesitionState {
   id: number;
   response: Array<string>;
@@ -48,7 +50,7 @@ export interface Paragraph {
   templateUrl: './revision.page.html',
   styleUrls: ['./revision.page.scss'],
   standalone: true,
-  imports: [IonChip, IonAvatar, IonModal, IonTextarea, IonInput, IonLabel, IonReorder, IonReorderGroup, IonList, IonItem, IonCheckbox, IonImg, IonProgressBar, IonCard,  IonCardContent, IonCardSubtitle, IonCardTitle, IonButtons, IonButton, IonGrid, IonRow, IonIcon, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [TranslateModule, IonChip, IonAvatar, IonModal, IonTextarea, IonInput, IonLabel, IonReorder, IonReorderGroup, IonList, IonItem, IonCheckbox, IonImg, IonProgressBar, IonCard,  IonCardContent, IonCardSubtitle, IonCardTitle, IonButtons, IonButton, IonGrid, IonRow, IonIcon, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class RevisionPage implements OnInit {
   
@@ -95,7 +97,7 @@ export class RevisionPage implements OnInit {
 
   public acceptable_thresh = 0.8
 
-  constructor( private loading_throbber:LoadingController,  private readonly userResource: UserResourceService, private ar: ActivatedRoute, private rt: Router) { 
+  constructor( private translate: TranslateService, private loading_throbber:LoadingController,  private readonly userResource: UserResourceService, private ar: ActivatedRoute, private rt: Router) { 
     // Init variables
     this.finished_loading = false;
     this.cur_state = {
@@ -106,7 +108,7 @@ export class RevisionPage implements OnInit {
   async presentLoading() {
     // Show loading throbber while app loads data
     const loading = await this.loading_throbber.create({
-        message: 'Please wait...',
+        message: this.translate.instant("loadingMsg"),
         translucent: true,
         
     });
@@ -119,7 +121,7 @@ export class RevisionPage implements OnInit {
       try {
         await this.pageInit()
       } catch (error) {
-          alert(`Error loading data: ${error}`);
+          alert(`${this.translate.instant("dataLoadingErr")}: ${error}`);
       } finally {
           await loading.dismiss();
       }
@@ -171,7 +173,7 @@ export class RevisionPage implements OnInit {
     }
 
     if (_r.status != 200) {
-      alert(`Fetching resource failed (${_r.status})`)
+      alert(`${this.translate.instant('resourceFetchingErr')} (${_r.status})`)
       this.rt.navigate(['dashboard'])
     }
 
@@ -252,7 +254,7 @@ export class RevisionPage implements OnInit {
       this.prog_bar_color ="success";
 
       // TODO: Change inbuilt alert() to fancier anim/effect
-      alert("✅ Correct!")
+      alert(`✅ ${this.translate.instant('correct')}`)
       this.next_q()
     } else {
 
@@ -272,19 +274,19 @@ export class RevisionPage implements OnInit {
             this.prog_bar_color ="success";
       
             // TODO: Change inbuilt alert() to fancier anim/effect
-            alert("✅ Seems right!")
+            alert(`✅ ${this.translate.instant('partiallyCorrect')}`)
           } else {
             this.cur_state.correct = false;
             this.prog_bar_color = "danger"
             // TODO: Change inbuilt alert() to fancier anim/effect
             this.cur_state.tried_again = true;
-            alert(`❌ The correct answer is: ${this.questions[this.cur_state.id].keys.toString()}`)
+            alert(`❌ ${this.translate.instant('wrong')} ${this.questions[this.cur_state.id].keys.toString()}`)
           }
         }
         else {
           
           if (this.questions[this.cur_state.id].type == 'OPEN' || this.questions[this.cur_state.id].type == 'AMEND') {
-            if (confirm(`❔The suggested answer is: ${this.questions[this.cur_state.id].keys.toString()}\n\nDo you think you got it right?\n\nOK for Yes\nCancel for No`)) {
+            if (confirm(`❔${this.translate.instant('keyOverride_1')} ${this.questions[this.cur_state.id].keys.toString()}\n\n${this.translate.instant('keyOverride_2')}`)) {
               this.cur_state.correct = true;
               this.prog_bar_color ="success";
               return
@@ -294,7 +296,7 @@ export class RevisionPage implements OnInit {
           this.prog_bar_color = "danger"
           // TODO: Change inbuilt alert() to fancier anim/effect
           this.cur_state.tried_again = true;
-          alert(`❌ The correct answer is: ${this.questions[this.cur_state.id].keys.toString()}`)
+          alert(`❌ ${this.translate.instant('wrong')} ${this.questions[this.cur_state.id].keys.toString()}`)
         }
 
     }
@@ -376,12 +378,12 @@ export class RevisionPage implements OnInit {
 
   __get_complement(): string {
     if (this.__calc_weighted_score() == this.questions.length) {
-      return "Perfection!"
+      return this.translate.instant("complement_100")
     }
     if (this.__calc_weighted_score() / this.questions.length >= this.acceptable_thresh) {
-      return "Well done"
+      return this.translate.instant("complement_50")
     }
-    return "Could do better"
+    return this.translate.instant("complement_0")
   }
 
   __get_serialized_percentage(): string {
@@ -477,9 +479,9 @@ export class RevisionPage implements OnInit {
     for (let i = 0; i < _r.data.questions.length; i++) {
       // @ts-ignore
       if (prompt(_r.data.questions[i].prompt).toLowerCase() == _r.data.questions[i].keys[0].toLowerCase()) {
-        confirm('✅ You got it right!')
+        confirm(`✅ ${this.translate.instant("correct1")}`)
       } else {
-        confirm(`❌ The correct answer is ${_r.data.questions[i].keys[0]}`)
+        confirm(`❌ ${this.translate.instant("wrong")}${_r.data.questions[i].keys[0]}`)
       }
     }
 
@@ -506,10 +508,11 @@ export class RevisionPage implements OnInit {
 
   ngOnInit() {
     addIcons(ionIcons);
+    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : "en")
   }
 
   public backToDashboard() {
-    if (confirm('Exit to dashboard? This will abandon your current progress.'))
+    if (confirm(this.translate.instant("abandonConfirmation")))
       this.rt.navigate(['dashboard'])
   }
 

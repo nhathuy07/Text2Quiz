@@ -5,7 +5,7 @@ import { CapacitorHttp } from '@capacitor/core';
 import { WeekDay } from '@angular/common';
 import { Router } from '@angular/router';
 // import { url } from 'inspector';
-
+import { TranslateService } from '@ngx-translate/core';
 export interface UserProfile {
   info: {
     name: string
@@ -50,7 +50,7 @@ export interface StudyPlan {
 })
 export class UserResourceService implements OnInit {
 
-  constructor(private rt: Router, private readonly oauthService: OAuthService) { 
+  constructor(private translate: TranslateService, private rt: Router, private readonly oauthService: OAuthService) { 
     // configure the OAuth service
     oauthService.configure({
       issuer: "https://accounts.google.com",
@@ -65,7 +65,7 @@ export class UserResourceService implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : 'en')
   }
 
   /**
@@ -107,7 +107,7 @@ export class UserResourceService implements OnInit {
 
       if (!force) {
 
-        if (!confirm("[WARN] Session expired! Log in again?")) {
+        if (!confirm(this.translate.instant('sessionExpiredErr'))) {
           this.rt.navigate(['signin'])
           return null
         }
@@ -166,7 +166,7 @@ export class UserResourceService implements OnInit {
       }
 
     } else {
-      alert( `Fetching content failed (${res.status})`)
+      alert( `${this.translate.instant('resourceFetchingErr')} (${res.status})`)
 
       return {
         content: '',
@@ -210,7 +210,7 @@ export class UserResourceService implements OnInit {
       }
     
     } else {
-      alert(`Loading resource failed! (${res.status})`)
+      alert(`${this.translate.instant('resourceFetchingErr')} (${res.status})`)
       this.signIn(true)
     }
     return arr

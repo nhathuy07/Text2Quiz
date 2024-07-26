@@ -13,7 +13,7 @@
   <ion-modal #flashcardViewerModal [isOpen]="flashcardViewerModalShown">
     <ng-template>
       <ion-card-title class="ion-padding">
-        Flashcard revision
+        {{'flashcardTitle' | translate}}
       </ion-card-title>
       <div style="height: calc(100% - 20px); overflow-y: scroll;">
         <div #flashcardListDiv style="overflow-y:visible;">
@@ -47,10 +47,10 @@
       <ion-grid>
         <ion-row>
           <ion-col>
-            <ion-button expand="block" (click)="exitToDashboard()">Done!</ion-button>
+            <ion-button expand="block" (click)="exitToDashboard()">{{'finish2' | translate}}</ion-button>
           </ion-col>
           <ion-col>
-            <ion-button expand="block" fill="outline" (click)="exportFlashcardList()">Export as image</ion-button>
+            <ion-button expand="block" fill="outline" (click)="exportFlashcardList()">{{'exportFlashcards' | translate}}</ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -83,7 +83,7 @@
         </ion-row>
         <ion-row>
           <ion-col style="max-width: fit-content;">
-            <button (click)="toggleImg()" style="padding: 10px;">Toggle image</button>
+            <button (click)="toggleImg()" style="padding: 10px;">{{'toggleImg' | translate}}</button>
           </ion-col>
           <ion-col style="width:fit-content">
             <button (click)="nextQ()" style="padding: 10px;">{{skipBtnLabel}}</button>
