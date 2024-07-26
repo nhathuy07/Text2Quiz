@@ -155,7 +155,7 @@ export class DocsEditPage implements OnInit {
 
   setTextSubject(event: any): boolean {
     // console.log(event)
-    if (event.detail.value == "Add...") {
+    if (event.detail.value == this.translate.instant('addLabel')) {
       return this.newSubject();
     }
     this.note_subject = event.detail.value

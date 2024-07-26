@@ -10,13 +10,13 @@
 
   <div class="foreground" style="display: flex; flex-direction: column; height: calc(100% - 10px); margin-bottom: 10px;">
     <ion-card style="background: transparent; box-shadow: none; ">
-      <ion-card-title class="white-text text-shadow text-title">Greetings, <strong>{{username}}!</strong></ion-card-title>
+      <ion-card-title class="white-text text-shadow text-title">{{'greet' | translate}}, <strong>{{username}}!</strong></ion-card-title>
     </ion-card>
 
     <!-- Goal tracker board -->
     <ion-card class="card-margin card-padding" style="height: 140px; min-height: 140px;">
-      <ion-card-subtitle *ngIf="!hasStudyGoal && noteList.length!=0">Get motivated!</ion-card-subtitle>
-      <ion-card-subtitle *ngIf="noteList.length==0">Let's get started!</ion-card-subtitle>
+      <ion-card-subtitle *ngIf="!hasStudyGoal && noteList.length!=0">{{'goalSetterSub' | translate}}</ion-card-subtitle>
+      <ion-card-subtitle *ngIf="noteList.length==0">{{'newUserSub' | translate}}</ion-card-subtitle>
 
       <ion-card-content style="padding-left: 0px;">
         <ion-list *ngIf="hasStudyGoal && noteList.length!=0">
@@ -30,7 +30,7 @@
             <img style="width: 60px;" src="../../assets/icon/bullseye.webp" />
           </ion-col>
           <ion-col style="flex-grow: 1; margin-left: 5px;" class="ion-align-self-center">
-            <ion-card-title style="font-size: large;">Tap here to set your first <strong>study plan!</strong></ion-card-title>
+            <ion-card-title style="font-size: large;">{{'goalSetter_1' | translate}}<strong>{{'goalSetter_2' | translate}}</strong>{{'goalSetter_3' | translate}}</ion-card-title>
           </ion-col>
         </ion-row>
         </ion-grid>
@@ -43,7 +43,7 @@
             <img style="width: 60px;" src="../../assets/icon/bullseye.webp" />
           </ion-col>
           <ion-col style="flex-grow: 1; margin-left: 5px;" class="ion-align-self-center">
-            <ion-card-title style="font-size: large;">Upload some study notes and start your <b>first revision!</b></ion-card-title>
+            <ion-card-title style="font-size: large;">{{'newUser_1' | translate}}<b>{{'newUser_2' | translate}}</b>{{'newUser_3' | translate}}</ion-card-title>
           </ion-col>
         </ion-row>
         </ion-grid>
@@ -52,11 +52,11 @@
     </ion-card>
 
     <ion-card class="card-margin card-padding" style="flex-grow: 1;  margin-top: 15px; background-color: transparent; box-shadow: none; padding: 0px;">
-      <ion-card-title style="padding: 8px; font-weight: bold;">Study materials</ion-card-title>
+      <ion-card-title style="padding: 8px; font-weight: bold;">{{'notesTitle' | translate}}</ion-card-title>
       <ion-card-content style="flex-grow: 1;  min-height: 300px; padding-left: 8px; padding-right: 8px;">
 
           <ion-row style="display: flex; flex-wrap: nowrap; overflow-x: scroll;">
-            <ion-chip [outline]="true" class="special-yellow" style="border-color: #cc9610; border-width: 2px; color: #cc9610; font-weight: bold; margin-left: 0px; white-space: nowrap; min-width: 110px;">⭐ Focused</ion-chip>
+            <ion-chip [outline]="true" class="special-yellow" style="border-color: #cc9610; border-width: 2px; color: #cc9610; font-weight: bold; margin-left: 0px; white-space: nowrap; min-width: 110px;">⭐ {{'focused' | translate}}</ion-chip>
             <ion-chip [outline]="!(currentFilter=='*')" (click)="updateSubjectFilter('*')" style="white-space: nowrap; min-width:fit-content;">All</ion-chip>
             <ion-chip [outline]="!(currentFilter==s)" (click)="updateSubjectFilter(s)" style="white-space: nowrap; min-width:fit-content;" *ngFor="let s of userSubjects">{{s}}</ion-chip>
           </ion-row>
@@ -79,7 +79,7 @@
 
     <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="padding-bottom:48px; padding-right:10px">
       <ion-button shape="round" size="large" (click)="create_note()">
-        <ion-icon name="add"></ion-icon><b style="font-size:medium;"> Create...</b>
+        <ion-icon name="add"></ion-icon><b style="font-size:medium;"> {{'createBtn' | translate}}</b>
       </ion-button>
     </ion-fab>
 
@@ -110,7 +110,7 @@
         <ion-card *ngIf="!isRevisionOptionsShown" class="ion-padding" style="overflow-y: auto;">
           <ion-row>
             <ion-card-subtitle class="ion-align-self-start">
-              Content
+              {{'contentLbl' | translate}}
             </ion-card-subtitle>
           </ion-row>
 
@@ -124,7 +124,7 @@
         <ion-grid *ngIf="!isRevisionOptionsShown" style="margin: 0px; padding-top: 0px">
           <ion-row>
             <ion-col>
-              <ion-button size="large" expand="block" class="ion-no-padding" (click)="toggleRevisionOptions(true)"> <ion-icon slot="start" name="sparkles"></ion-icon> <ion-label style="font-weight: bold; font-size: medium;">Start revision</ion-label></ion-button>
+              <ion-button size="large" expand="block" class="ion-no-padding" (click)="toggleRevisionOptions(true)"> <ion-icon slot="start" name="sparkles"></ion-icon> <ion-label style="font-weight: bold; font-size: medium;">{{'reviseBtn' | translate}}</ion-label></ion-button>
             </ion-col>
             
           </ion-row>
@@ -133,7 +133,7 @@
         <!-- Revision Options -->
         <ion-card *ngIf="isRevisionOptionsShown" #revisionOptions style="box-shadow: none; height: 100%;">
           <ion-card-title style="text-align: center; padding-top: 30px;">
-            How do you want to revise?
+            {{'reviseOptionPrompt' | translate}}
           </ion-card-title>
           <ion-card-content style="padding-left: 0px;">
             <ion-card (click)="initRevisionProcess(false,false)" class="ion-activatable ripple-parent rounded-rectangle" style="width: 100%;">
@@ -141,8 +141,8 @@
               <ion-ripple-effect></ion-ripple-effect>
               <ion-card-content>
                 <ion-label>
-                  <h2 class="special"><b>❔Factual questions</b></h2>
-                  <p>Practise with questions directly related to the given material.</p>
+                  <h2 class="special"><b>❔{{'factual' | translate}}</b></h2>
+                  <p>{{'factualSub' | translate}}</p>
                 </ion-label>
               </ion-card-content>
             </ion-card>
@@ -152,8 +152,8 @@
               <ion-ripple-effect></ion-ripple-effect>
               <ion-card-content>
                 <ion-label>
-                  <h2 class="special">🗃️ Flashcards</h2>
-                  <p>Familiarize yourself with key terms</p>
+                  <h2 class="special">🗃️ {{'flashcards' | translate}}</h2>
+                  <p>{{'flashcardsSub' | translate}}</p>
                 </ion-label>
               </ion-card-content>
             </ion-card>
@@ -167,12 +167,12 @@
               </ion-item> -->
 
 
-            <ion-select value="Vietnamese" label="Generate quiz in:" (ionChange)="changeInferenceLang($event)" interface="popover" placeholder="Language..." style="padding-left: 16px;" justify="start">
+            <ion-select value="Vietnamese" label="{{'langChooser' | translate}}" (ionChange)="changeInferenceLang($event)" interface="popover" placeholder="Language..." style="padding-left: 16px;" justify="start">
               <ion-select-option value="Vietnamese">Tiếng Việt</ion-select-option>
               <ion-select-option value="English">English</ion-select-option>
             </ion-select>
 
-            <ion-checkbox [(ngModel)]="approxCheck" labelPlacement="end" style="padding-left: 16px;">Approximate grading mode (for open-ended questions).</ion-checkbox>
+            <ion-checkbox [(ngModel)]="approxCheck" labelPlacement="end" style="padding-left: 16px;">{{'approxGradeMode' | translate}}</ion-checkbox>
 
           </ion-card-content>
 
@@ -181,8 +181,8 @@
         <!-- Note Options popover -->
         <ion-popover (didDismiss)="toggleNoteOptions(false)" (click)="toggleNoteOptions(false)" #noteOptionsPopover [isOpen]="isPopoverOpen">
           <ng-template>
-            <ion-button style="--box-shadow:none" (click)="handleNoteOptions('edit')">Edit</ion-button>
-            <ion-button style="--box-shadow:none" (click)="handleNoteOptions('delete')" color="danger">Delete</ion-button>
+            <ion-button style="--box-shadow:none" (click)="handleNoteOptions('edit')">{{'editBtn' | translate}}</ion-button>
+            <ion-button style="--box-shadow:none" (click)="handleNoteOptions('delete')" color="danger">{{'delBtn' | translate}}</ion-button>
           </ng-template>
         </ion-popover>
 
