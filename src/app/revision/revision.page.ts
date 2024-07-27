@@ -157,9 +157,6 @@ export class RevisionPage implements OnInit {
     // console.log(__i)
     console.log(this.approx_check)
 
-    let n_file = await this.userResource.readServerTempFile(this.n_id)
-    this.n_title = n_file[0]
-
     const _r = await CapacitorHttp.get({url: `${environment.BACKEND_LOC}/generateQuiz/${this.n_id}/${this.n_lang}`})
     for (let i = 0; i < _r.data.questions.length; i++) {
 
@@ -167,6 +164,9 @@ export class RevisionPage implements OnInit {
       // console.log(JSON.parse(JSON.stringify(_r.data.questions[i])))
     }
     // this.n_content = _r.data.paragraphs
+
+    // let n_file = await this.userResource.readServerTempFile(this.n_id)
+    this.n_title = _r.data.title
 
     for (let i = 0; i < _r.data.paragraphs.length; i++) {
       this.paragraphs.push( _r.data.paragraphs[i] as Paragraph )
