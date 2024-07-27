@@ -52,6 +52,8 @@ export class DashboardPage implements OnInit {
 
   public approxCheck: boolean = false;
 
+  public feedbackModalOpen: boolean=false;
+
   public currentNote: UserNoteMetadata= {
     name: '',
     subject: '',
@@ -72,6 +74,15 @@ export class DashboardPage implements OnInit {
     addIcons(ionIcons)
   }
 
+  __getBrowserLang(): string{
+    let _l = this.translate.getBrowserLang()
+    if (_l == undefined) {
+      return 'en'
+    } else {
+      return _l
+    }
+  }
+
   async presentLoading() {
     // Show loading throbber while app loads data
     const loading = await this.loading_throbber.create({
@@ -84,7 +95,7 @@ export class DashboardPage implements OnInit {
 }
 
   async ionViewWillEnter() {
-    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : "en")
+    this.translate.use(this.__getBrowserLang())
       // Show loading throbber while app loads data
       const loading = await this.presentLoading();
       try {
@@ -271,5 +282,7 @@ export class DashboardPage implements OnInit {
       alert('feature coming soon!')
     }
   }
+
+
 
 }

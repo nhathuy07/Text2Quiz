@@ -9,8 +9,23 @@
   <div class="white-fade"></div>
 
   <div class="foreground" style="display: flex; flex-direction: column; height: calc(100% - 10px); margin-bottom: 10px;">
-    <ion-card style="background: transparent; box-shadow: none; ">
-      <ion-card-title class="white-text text-shadow text-title">{{'greet' | translate}}, <strong>{{username}}!</strong></ion-card-title>
+    
+    <ion-card style="background: transparent; box-shadow: none;">
+      <ion-grid>
+        <ion-row>
+          <ion-col style="display: flex; justify-self: start; align-content: center;">
+            <ion-card-title class="white-text text-shadow text-title">{{'greet' | translate}}, <strong>{{username}}!</strong></ion-card-title>
+          </ion-col>
+          <ion-col style="display: flex; justify-content: end; align-content: center;">
+            
+            <ion-button shape="round" style="--color:#5260ff; --background:white " (click)="feedbackModalOpen=true">
+              <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
+              {{'feedback' | translate}}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      
     </ion-card>
 
     <!-- Goal tracker board -->
@@ -185,6 +200,21 @@
             <ion-button style="--box-shadow:none" (click)="handleNoteOptions('delete')" color="danger">{{'delBtn' | translate}}</ion-button>
           </ng-template>
         </ion-popover>
+
+      </ng-template>
+      
+    </ion-modal>
+
+    <ion-modal #feedbackModal [isOpen]="feedbackModalOpen" (willDismiss)="feedbackModalOpen=false" style="--min-height: 615px;;">
+      <ng-template>
+        <div style="width: 100%; height: calc(100% - 30px);">
+          <iframe *ngIf="__getBrowserLang()=='vi'" src="https://docs.google.com/forms/d/e/1FAIpQLSeDNnbVDT5dN2A9zKJw6Vrd-uOC3Njh0jSh0CouOkzeknpAQQ/viewform?embedded=true" frameborder="0" marginheight="3" marginwidth="3" height="100%" width="100%">Đang tải...</iframe>
+          <iframe *ngIf="__getBrowserLang()!='vi'" src="https://docs.google.com/forms/d/e/1FAIpQLSemriZglLnXcuTosbwlhHvURj6gPXM3iX6WqPdBLT_W6ReBpg/viewform?embedded=true" frameborder="0" marginheight="3" marginwidth="3" height="100%" width="100%">Loading...</iframe>
+        </div>
+        
+        <div>
+          <ion-button style="margin-left: 24px;  margin-bottom: 10px;" fill="outline" (click)="feedbackModalOpen=false">{{'exit1' | translate}}</ion-button>
+        </div>
 
       </ng-template>
       
