@@ -87,5 +87,10 @@
     "approxGradeMode": "Chế độ chấm ước tính (Câu hỏi tự luận)",
     "editBtn": "Chỉnh sửa",
     "delBtn": "Xóa",
-    "all": "Tất cả"
+    "all": "Tất cả",
+
+    "fdeleted": "Đã xóa file thành công.",
+    "fdeleteErr": "Không xóa được file.",
+    "comingSoon": "Tính năng đang được phát triển. Vui lòng quay lại sau.",
+    "operationFailed": "Tác vụ không thực hiện được."
 }

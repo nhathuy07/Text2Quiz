@@ -101,7 +101,7 @@ export class DashboardPage implements OnInit {
       try {
         await this.pageInit()
       } catch (error) {
-          alert(`Error loading data: ${error}`);
+          alert(`${this.translate.instant('dataLoadingErr')}: ${error}`);
       } finally {
           await loading.dismiss();
       }
@@ -172,7 +172,7 @@ export class DashboardPage implements OnInit {
     try {
       this.noteList = await this.userResource.filterNotesBySubject(s)
     } catch (e) {
-      alert(`Error caught while loading resource: ${e}`)
+      alert(`${this.translate.instant('resourceFetchingErr')}: ${e}`)
     } finally {
       loading.dismiss()
     }
@@ -231,12 +231,12 @@ export class DashboardPage implements OnInit {
         headers: {'Authorization': `Bearer ${await this.userResource.signIn(false)}`}
       })
       if (r.status.toString().startsWith('2')) {
-        alert("File deleted.")
+        alert(this.translate.instant('fdeleted'))
         this.dismissNoteViewerModal()
         this.pageInit()
 
       } else {
-        alert (`Deletion failed (${r.status})`)
+        alert (`${this.translate.instant('fdeleteErr')} (${r.status})`)
       }
     }
     
@@ -279,7 +279,7 @@ export class DashboardPage implements OnInit {
         this.rt.navigate(['revision', id, this.approxCheck, this.inferLang])
       }, 30)
     } else {
-      alert('feature coming soon!')
+      alert(this.translate.instant('comingSoon'))
     }
   }
 

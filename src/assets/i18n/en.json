@@ -87,6 +87,11 @@
     "approxGradeMode": "Approximate grading mode (for open-ended questions).",
     "editBtn": "Edit",
     "delBtn": "Delete",
-    "all": "All"
+    "all": "All",
 
+
+    "fdeleted": "File deleted.",
+    "fdeleteErr": "Deletion failed",
+    "comingSoon": "Feature coming soon!",
+    "operationFailed": "Operation failed"
 }
