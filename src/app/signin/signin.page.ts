@@ -2,12 +2,13 @@ import { Component, OnInit, afterRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 // import { CapacitorHttp, HttpResponse } from '@capacitor/core'
-import { IonImg, IonGrid, IonRow, IonCol, IonCardTitle, IonCardContent, IonCardSubtitle, IonLabel, IonCard, IonButton, IonSegmentButton, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { AlertController, IonImg, IonGrid, IonRow, IonCol, IonCardTitle, IonCardContent, IonCardSubtitle, IonLabel, IonCard, IonButton, IonSegmentButton, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 
 import { UserResourceService } from '../user-resource.service';
 import { Router } from '@angular/router';
 
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import { Preferences } from '@capacitor/preferences';
 
 @Component({
   selector: 'app-signin',
@@ -22,7 +23,8 @@ export class SigninPage implements OnInit {
   constructor(
     private router: Router,  
     private userResource: UserResourceService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private alertCtrl: AlertController
   ) { 
     // if (this.userResource.getAccessToken()) {
     //   this.router.navigate(['dashboard'])
@@ -41,10 +43,27 @@ export class SigninPage implements OnInit {
   
 
   async google_authenticate() {
-    console.log(this.userResource.signIn(false))
+
+    const {value} = await  Preferences.get({key: 'permissionAdequate'})
+
+    if (value == 'true') {
+      this.userResource.signIn(true)
+    } 
+    else {
+      const permissionPrompt = await this.alertCtrl.create(
+      {
+        header: this.translate.instant('permissionPrompt'),
+        subHeader: this.translate.instant('permissionPurpose'),
+        message: this.translate.instant('permissionAccessDriveAppdata'),
+        buttons: [
+          {text: this.translate.instant('continue'), role: 'confirm', handler: () => {console.log(this.userResource.signIn(true))}},
+          {text: this.translate.instant('cancel'), role: 'cancel', handler: () => {permissionPrompt.dismiss()}}
+        ]
+      }
+    )
+
+    permissionPrompt.present()
   }
-  
-  // get_google_oauth_url(client_id: string, redirect_uri: string, scope: Array<string>): string {
-  //   return encodeURI(`https://accounts.google.com/o/oauth2/v2/auth?client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope.join(" ")}&response_type=token`)
-  // }
+  }
+
 }

@@ -87,6 +87,16 @@
     "approxGradeMode": "Approximate grading mode (for open-ended questions).",
     "editBtn": "Edit",
     "delBtn": "Delete",
-    "all": "All"
+    "all": "All",
+
+    "tryAgain": "Please try again.",
+    "questionGeneratorErr": "An error occured while generating questions.",
+
+    "permissionPrompt": "Permission required.",
+    "permissionPurpose": "To save your study notes and preferences, the following permission must be granted upon login: ",
+    "permissionAccessDriveAppdata": "[GDrive] View and manage the app's own configuration data in your Google Drive.",
+
+    "continue": "Continue",
+    "cancel": "Cancel"
 
 }

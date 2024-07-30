@@ -136,6 +136,8 @@ export class UserResourceService implements OnInit {
     
   }
 
+
+
   public signOut(): void {
   
   }
@@ -211,7 +213,7 @@ export class UserResourceService implements OnInit {
     
     } else {
       alert(`${this.translate.instant('resourceFetchingErr')} (${res.status})`)
-      this.signIn(true)
+      // this.signIn(true)
     }
     return arr
   }
@@ -406,6 +408,15 @@ export class UserResourceService implements OnInit {
 
   public getPlans(): Array<any> {
     return [];
+  }
+
+  public checkSufficientScope(): boolean {
+    const scopes = this.oauthService.getGrantedScopes() as Array<string>
+    if (scopes.includes('https://www.googleapis.com/auth/drive.appdata')) {
+      return true
+    }
+    return false
+
   }
 
 }

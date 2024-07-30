@@ -23,6 +23,7 @@
     "imgExportErr": "Đã xảy ra lỗi khi xuất flashcards",
     "sessionExpiredErr": "Đã hết phiên đăng nhập. Vui lòng đăng nhập lại.",
     "resourceFetchingErr": "Đã xảy ra lỗi khi tải nội dung",
+    "questionGeneratorErr": "Đã xảy ra lỗi khi tạo câu hỏi",
     "correct": "Chính xác!",
     "correct1": "Bạn trả lời đúng rồi!",
     "partiallyCorrect": "Có vẻ đúng đấy!",
@@ -87,5 +88,14 @@
     "approxGradeMode": "Chế độ chấm ước tính (Câu hỏi tự luận)",
     "editBtn": "Chỉnh sửa",
     "delBtn": "Xóa",
-    "all": "Tất cả"
+    "all": "Tất cả",
+
+    "tryAgain": "Xin vui lòng thử lại.",
+
+    "permissionPrompt": "Cần cấp quyền truy cập",
+    "permissionPurpose": "Để lưu dữ liệu của bạn, bạn cần cấp quyền sau khi đăng nhập: ",
+    "permissionAccessDriveAppdata": "[GDrive] Xem và quản lý dữ liệu cấu hình riêng của ứng dụng trong Google Drive của bạn.",
+
+    "continue": "Tiếp tục",
+    "cancel": "Hủy"
 }

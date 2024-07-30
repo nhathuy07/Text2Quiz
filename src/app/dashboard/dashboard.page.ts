@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonFabList, IonCheckbox, IonSelect, IonSelectOption, IonRippleEffect, IonPopover, IonButtons, IonModal, IonThumbnail, LoadingController, IonGrid, IonRow, IonCol, IonChip, IonItem, IonIcon, IonFabButton, IonFab, IonButton, IonLabel, IonCardSubtitle, IonCard, IonCardTitle, IonList, IonCardContent, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-
+import { AlertController} from '@ionic/angular'
 import { Preferences } from '@capacitor/preferences';
 import { addIcons } from 'ionicons';
 
@@ -69,7 +69,7 @@ export class DashboardPage implements OnInit {
 
   public userSubjects: Set<string> = new Set<string>
 
-  constructor(private translate: TranslateService, private ar:ActivatedRoute, private rt: Router, private readonly userResource: UserResourceService, private loading_throbber: LoadingController) { 
+  constructor(private alertCtrl: AlertController, private translate: TranslateService, private ar:ActivatedRoute, private rt: Router, private readonly userResource: UserResourceService, private loading_throbber: LoadingController) { 
     // add icons
     addIcons(ionIcons)
   }
@@ -94,17 +94,44 @@ export class DashboardPage implements OnInit {
     return loading;
 }
 
+  async request_permission_if_needed() {
+    if (!this.userResource.checkSufficientScope()) {
+      const permPrompt = await this.alertCtrl.create(
+        {
+          header: this.translate.instant('permissionPrompt'),
+          subHeader: this.translate.instant('permissionPurpose'),
+          message: this.translate.instant('permissionAccessDriveAppdata'),
+          buttons: [
+            {'text': this.translate.instant('cancel')},
+            {'text': this.translate.instant('continue'), handler: () => {this.userResource.signIn(true)}}
+          ]
+        }
+      )
+
+      permPrompt.present()
+    } else {
+      await Preferences.set({key: 'permissionAdequate', value: 'true'})
+    }
+  }
+
   async ionViewWillEnter() {
     this.translate.use(this.__getBrowserLang())
-      // Show loading throbber while app loads data
-      const loading = await this.presentLoading();
-      try {
-        await this.pageInit()
-      } catch (error) {
-          alert(`Error loading data: ${error}`);
-      } finally {
-          await loading.dismiss();
+    this.request_permission_if_needed().then(
+      async() => {
+          // Show loading throbber while app loads data
+          const loading = await this.presentLoading();
+          try {
+            await this.pageInit()
+          } catch (error) {
+              alert(`Error loading data: ${error}`);
+          } finally {
+              await loading.dismiss();
+          }
       }
+    )
+
+    
+      
   
 
   }
