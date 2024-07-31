@@ -151,7 +151,12 @@ export class DashboardPage implements OnInit {
 
   async __loadNoteContent(_note: UserNoteMetadata) {
 
-    
+    // automatically set inference language based on locale
+    if (this.__getBrowserLang() == 'vi') {
+      this.inferLang = 'Vietnamese'
+    } else {
+      this.inferLang = 'English'
+    }
 
     this.currentNoteContent.keywords?.clear()
 
