@@ -175,7 +175,7 @@ export class DashboardPage implements OnInit {
     this.username = await this.userResource.getLoggedInUserName()
     this.noteList = await this.userResource.filterNotesBySubject("*")
     this.userSubjects = await this.userResource.getSubjectFilters()
-    this.inferLang = "Vietnamese"
+    this.inferLang = ""
 
     let redir_note_id: string | undefined = undefined
 
@@ -225,10 +225,25 @@ export class DashboardPage implements OnInit {
   ngOnInit() {
   }
 
+  handleNoteViewerBackBtn() {
+    // return to previous page if showing revision option page
+    if (this.isRevisionOptionsShown) {
+      this.toggleRevisionOptions(false)
+      
+      // inject text html to rich-text-viewer div
+      
+      setTimeout(() => {this.rtviewer.nativeElement.innerHTML = this.currentNoteContent.content;}, 30)
+      return
+    } 
+    this.dismissNoteViewerModal()
+  }
 
   dismissNoteViewerModal() {
+
+
     this.noteViewerModalOpen = false
     this.isRevisionOptionsShown = false
+    
     this.rt.navigate(['.'], {relativeTo: this.ar, queryParams: {}})
   }
 

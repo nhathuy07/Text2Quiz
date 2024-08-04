@@ -164,7 +164,8 @@ export class UserResourceService implements OnInit {
         name: res_meta.data.name.split('::')[1].replaceAll('.html',''),
         subject: res_meta.data.name.split('::',1)[0],
         content: res.data.substring(__delim_pos+1),
-        keywords: new Set<string>(res.data.substring(0,__delim_pos).split(','))
+        // @ts-ignore
+        keywords: new Set<string>(res.data.substring(0,__delim_pos).split(',').filter((val, _, __)=>{return val.trim().length != 0}))
       }
 
     } else {
