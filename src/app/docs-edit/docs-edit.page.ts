@@ -79,7 +79,7 @@ export class DocsEditPage implements OnInit {
 }
 
   returnSerializedKeywords() :string{
-    return Array.from(this.note_keywords).join(', ')
+    return Array.from(this.note_keywords).filter((val, _, __)=>{ return val.trim().length != 0 }).join(', ')
   }
 
   async ionViewWillEnter() {

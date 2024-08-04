@@ -5,7 +5,7 @@
     <ion-input id="name_input" [(ngModel)]="note_name" autocapitalize="on" class="input-height" style="font-weight: bold;" fill="solid" placeholder="{{'titlePrompt' | translate}}"></ion-input>
 
     <ion-buttons slot="end">
-      <ion-button  (click)="uploadOrUpdateNote()"> <ion-icon name="save-outline"></ion-icon> </ion-button>
+      <ion-button fill="solid" (click)="uploadOrUpdateNote()"> <ion-icon name="save-outline" slot="start"></ion-icon> {{'save' | translate}}</ion-button>
     </ion-buttons>
 
     <ion-buttons slot="start">

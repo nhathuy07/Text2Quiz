@@ -117,7 +117,7 @@
 
         <!-- Keyword card -->
         <ion-card *ngIf="!isRevisionOptionsShown" class='ion-padding' style="white-space: nowrap; min-height: 80px; max-height: 120px; overflow-x: scroll;">
-          <ion-card-subtitle>Keywords</ion-card-subtitle>
+          <ion-card-subtitle>{{'keywordsLabel' | translate}}</ion-card-subtitle>
           <ion-chip color="primary" *ngFor="let w of currentNoteContent.keywords" >{{w}}</ion-chip>
         </ion-card>
 
@@ -182,7 +182,7 @@
               </ion-item> -->
 
 
-            <ion-select value="Vietnamese" label="{{'langChooser' | translate}}" (ionChange)="changeInferenceLang($event)" interface="popover" placeholder="Language..." style="padding-left: 16px;" justify="start">
+            <ion-select value="{{inferLang}}" label="{{'langChooser' | translate}}" (ionChange)="changeInferenceLang($event)" interface="popover" placeholder="Language..." style="padding-left: 16px;" justify="start">
               <ion-select-option value="Vietnamese">Tiếng Việt</ion-select-option>
               <ion-select-option value="English">English</ion-select-option>
             </ion-select>

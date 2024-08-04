@@ -97,5 +97,7 @@
     "permissionAccessDriveAppdata": "[GDrive] Xem và quản lý dữ liệu cấu hình riêng của ứng dụng trong Google Drive của bạn.",
 
     "continue": "Tiếp tục",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "noteDeletionConfirm": "Xóa mục này?"
 }

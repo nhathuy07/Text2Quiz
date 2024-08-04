@@ -97,6 +97,9 @@
     "permissionAccessDriveAppdata": "[GDrive] View and manage the app's own configuration data in your Google Drive.",
 
     "continue": "Continue",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+
+    "save": "Save",
+    "noteDeletionConfirm": "Delete this item?"
 
 }

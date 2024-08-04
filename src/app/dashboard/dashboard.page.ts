@@ -48,7 +48,7 @@ export class DashboardPage implements OnInit {
 
   public currentFilter: string = "*";
 
-  public inferLang: string = "Vietnamese";
+  public inferLang: string = "";
 
   public approxCheck: boolean = false;
 
@@ -229,6 +229,7 @@ export class DashboardPage implements OnInit {
   dismissNoteViewerModal() {
     this.noteViewerModalOpen = false
     this.isRevisionOptionsShown = false
+    this.rt.navigate(['.'], {relativeTo: this.ar, queryParams: {}})
   }
 
   toggleNoteOptions(show?:boolean) {
@@ -254,7 +255,7 @@ export class DashboardPage implements OnInit {
       
     } else if (action == 'delete') {
 
-      if (!confirm("Delete this note?")) {
+      if (!confirm(this.translate.instant('noteDeletionConfirm'))) {
         return;
       }
 
