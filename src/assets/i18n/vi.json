@@ -99,5 +99,15 @@
     "continue": "Tiếp tục",
     "cancel": "Hủy",
     "save": "Lưu",
-    "noteDeletionConfirm": "Xóa mục này?"
+    "noteDeletionConfirm": "Xóa mục này?",
+
+
+    "editorWelcomeTitle": "Chào mừng đến với trình biên tập!",
+    "editorWelcome1": "Để việc ôn tập được hiệu quả, hãy:",
+    "editorWelcome2": "Đánh dấu những từ khóa bằng tính năng <em>Highlight</em>.",
+    "editorWelcome3": "Đặt đầu mục cho các đoạn văn bằng tính năng <em>Header (H1, H2)</em>",
+    "editorWelcome4": "Tránh nhập nội dung quá dài (tối đa 5000 kí tự).",
+
+
+    "charLimitErr": "Đã vượt quá giới hạn kí tự! Vui lòng rút gọn nội dung."
 }

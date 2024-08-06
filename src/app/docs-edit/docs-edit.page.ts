@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonModal, LoadingController, IonSelect, IonSelectOption, IonItem, IonPopover, IonLabel, IonButtons, IonIcon, IonButton, IonCol, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { AlertController, IonModal, LoadingController, IonSelect, IonSelectOption, IonItem, IonPopover, IonLabel, IonButtons, IonIcon, IonButton, IonCol, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import * as ionIcons from 'ionicons/icons'
 import { addIcons } from 'ionicons';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,13 +11,15 @@ import { CapacitorHttp } from '@capacitor/core';
 import { UserResourceService } from '../user-resource.service';
 import { environment } from 'src/environments/environment';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { IonicSafeString } from '@ionic/angular'
+
 
 @Component({
   selector: 'app-docs-edit',
   templateUrl: './docs-edit.page.html',
   styleUrls: ['./docs-edit.page.scss'],
   standalone: true,
-  imports: [TranslateModule, IonModal, IonSelect, IonSelectOption, IonItem, IonPopover,IonLabel, IonButtons, IonIcon, IonCol, IonButton, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
+  imports: [TranslateModule, IonModal, IonSelect, IonSelectOption, IonItem, IonPopover, IonLabel, IonButtons, IonIcon, IonCol, IonButton, IonCard, IonCardContent, IonCardSubtitle, IonInput, IonGrid, IonRow, IonTextarea, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
 
 })
 
@@ -28,7 +30,7 @@ export class DocsEditPage implements OnInit {
   @ViewChild("highlight") highlight: ElementRef<HTMLButtonElement>;
   // @ts-ignore
   @ViewChild("inputfile") inputfile: ElementRef<HTMLInputElement>;
-// @ts-ignore
+  // @ts-ignore
   @ViewChild("fileChooserOptions") fileChooserOptions: HTMLIonPopoverElement;
   // @ts-ignore
   @ViewChild("rte") rte: ElementRef<HTMLDivElement>;
@@ -45,13 +47,16 @@ export class DocsEditPage implements OnInit {
 
   private walkthrough_mode: boolean = false;
 
+  public charCount: number = 0;
+  public maxCharCount: number = 5000;
+
   public isNoteGeneratorModalOpened = false;
   public noteGeneratorModalPrompt: string = "";
   public noteGeneratorModalLang: string = "Vietnamese";
 
   private note_keywords: Set<string> = new Set<string>;
 
-  public note_id: string="";
+  public note_id: string = "";
 
   private toolbarDiv: any;
 
@@ -63,43 +68,75 @@ export class DocsEditPage implements OnInit {
 
   public availableSubjects: Set<string> = new Set<string>()
 
-   constructor(private translate: TranslateService, private ar: ActivatedRoute, private userResource: UserResourceService, private router: Router, private loading_throbber: LoadingController) { 
+  constructor(private alertCtrl: AlertController, private translate: TranslateService, private ar: ActivatedRoute, private userResource: UserResourceService, private router: Router, private loading_throbber: LoadingController) {
 
     addIcons(ionIcons);
+    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : 'en')
+
   }
-  
+
   async presentLoading() {
     // Show loading throbber while app loads data
     const loading = await this.loading_throbber.create({
-        message: this.translate.instant('loadingMsg'),
-        translucent: true
+      message: this.translate.instant('loadingMsg'),
+      translucent: true
     });
     await loading.present();
     return loading;
-}
+  }
 
-  returnSerializedKeywords() :string{
-    return Array.from(this.note_keywords).filter((val, _, __)=>{ return val.trim().length != 0 }).join(', ')
+  returnSerializedKeywords(): string {
+    return Array.from(this.note_keywords).filter((val, _, __) => { return val.trim().length != 0 }).join(', ')
   }
 
   async ionViewWillEnter() {
-      // Show loading throbber while app loads data
-      const loading = await this.presentLoading();
-      try {
-        await this.pageInit()
-      } catch (error) {
-          console.error('Error loading data:', error);
-      } finally {
-          await loading.dismiss();
-      }
-  
+
+    // Show welcome guide for new users
+    // TODO: Add detection for new user
+    this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : 'en')
+
+
+    if (this.note_id == 'new') {
+      const alert_string =`
+      <div>
+        <b>${this.translate.instant('editorWelcome1')}</b>:
+        <ul class="editor-greeter-ul">
+        <li>${this.translate.instant('editorWelcome2')}</li>
+        <li>${this.translate.instant('editorWelcome3')}</li>
+        <li>${this.translate.instant('editorWelcome4')}</li>
+        </ul>
+      </div>
+      `
+      const alrt = await this.alertCtrl.create(
+        {
+          header: this.translate.instant('editorWelcomeTitle'),
+          message: alert_string,
+          buttons: [{
+            'text': this.translate.instant('continue'),
+            'handler': (_) => {alrt.dismiss()}
+          }],
+        }
+      )
+      await alrt.present()
+    }
+
+    // Show loading throbber while app loads data
+    const loading = await this.presentLoading();
+    try {
+      await this.pageInit()
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      await loading.dismiss();
+    }
+
 
   }
 
   async ngOnInit() {
-    await this.pageInit()
     this.translate.use(this.translate.getBrowserLang() ? this.translate.getBrowserLang() as string : 'en')
-  
+    await this.pageInit()
+
   }
 
   async pageInit() {
@@ -118,23 +155,59 @@ export class DocsEditPage implements OnInit {
 
 
     // (re)init variables
-    
-     this.note_name = "";
-     this.note_content = "";
-     this.note_subject = "";
-     this.note_language = "";
-     this.note_keywords = new Set<string>;
 
-     if (this.note_id != "new") {
+    this.note_name = "";
+    this.note_content = "";
+    this.note_subject = "";
+    this.note_language = "";
+    this.note_keywords = new Set<string>;
+
+    if (this.note_id != "new") {
       await this.tryGetExistingNoteContent()
-     } else {
+    } else {
       this.rte.nativeElement.innerHTML = ""
-     }
+    }
+
+    
 
   }
 
+  // hook custom event to paste action
+  RTEHandlePaste(ev: Event | any) {
+
+    ev.preventDefault()
+    ev.stopPropagation()
+    console.log('paste event occured')
+    const html_text = ev.clipboardData?.getData('text/html')
+    if (html_text == undefined) {
+      return
+    }
+
+    const holder = document.createElement('div')
+    holder.innerHTML = html_text
+
+    // Remove style and script elems
+    const styles = holder.querySelectorAll('style, script')
+    styles.forEach(st => st.remove())
+
+    // Remove inline styles
+    const elems = holder.querySelectorAll('*')
+
+    elems.forEach(
+      elem => {
+        const attrs = Array.from(elem.attributes)
+        attrs.forEach(attr => elem.removeAttribute(attr.name))
+      }
+    )
+
+    console.log(holder.innerHTML)
+    // this.rte.nativeElement.insertAdjacentHTML('beforeend', holder.innerHTML)
+    document.getSelection()?.getRangeAt(0).insertNode(holder)
+    this.RTEUpdateWordCounter()
+  }
+
   async tryGetExistingNoteContent() {
-    
+
     let note = await this.userResource.getNoteByID(this.note_id)
     console.info(note)
 
@@ -146,6 +219,9 @@ export class DocsEditPage implements OnInit {
     } else {
       this.note_keywords = new Set<string>();
     }
+
+    this.RTEUpdateWordCounter()
+
   }
 
   async getExistingSubjects() {
@@ -193,6 +269,11 @@ export class DocsEditPage implements OnInit {
 
   async uploadOrUpdateNote() {
 
+    if (this.charCount > this.maxCharCount) {
+      alert(this.translate.instant('charLimitErr'))
+      return
+    }
+
     // console.log(this.note_id);
     await this.userResource.signIn(false)
 
@@ -222,7 +303,7 @@ export class DocsEditPage implements OnInit {
       this.rte.nativeElement.innerHTML.toString(),
       "--ENDPART--"
     ]
-    
+
     // await this.userResource.refreshAccessToken()
 
     const req = await CapacitorHttp.patch({
@@ -237,14 +318,14 @@ export class DocsEditPage implements OnInit {
       },
       data: request_body.join("\n")
     })
-    
+
     if (req.status == 200) {
       this.note_id = req.data.id
       // console.log(this.note_id)
 
       alert(this.translate.instant('uploadSuccess'))
       if (this.walkthrough_mode) {
-        this.router.navigate(['dashboard'], {queryParams: {redir_id: this.note_id}})
+        this.router.navigate(['dashboard'], { queryParams: { redir_id: this.note_id } })
       } else {
         this.router.navigate(['dashboard'])
       }
@@ -255,48 +336,48 @@ export class DocsEditPage implements OnInit {
 
   async uploadNewNote() {
 
-      let request_body = [
-        "--ENDPART",
-        "Content-Type: application/json; encoding=utf-8",
-        "",
-        JSON.stringify({
-          "name": `${this.note_subject}::${this.note_name}.html`,
-          "mimeType": "text/html",
-          "parents": ["appDataFolder"]
-        }),
-        "\n--ENDPART\n",
-        this.returnSerializedKeywords(),
-        this.rte.nativeElement.innerHTML.toString(),
-        "--ENDPART--"
-      ]
-      
-      console.log(request_body)
+    let request_body = [
+      "--ENDPART",
+      "Content-Type: application/json; encoding=utf-8",
+      "",
+      JSON.stringify({
+        "name": `${this.note_subject}::${this.note_name}.html`,
+        "mimeType": "text/html",
+        "parents": ["appDataFolder"]
+      }),
+      "\n--ENDPART\n",
+      this.returnSerializedKeywords(),
+      this.rte.nativeElement.innerHTML.toString(),
+      "--ENDPART--"
+    ]
 
-      // await this.userResource.refreshAccessToken()
+    console.log(request_body)
 
-      const req = await CapacitorHttp.post({
-        url: "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-        headers: {
-          "Content-Type": "multipart/related; boundary=ENDPART",
-          // @ts-ignore
-          "Authorization": `Bearer ${await this.userResource.signIn(false)}`
-        },
-        data: request_body.join("\n")
-      })
-      
-      if (req.status == 200) {
-        this.note_id = req.data.id
-        console.log(this.note_id)
+    // await this.userResource.refreshAccessToken()
 
-        alert("Uploaded successfully!")
-        if (this.walkthrough_mode) {
-          this.router.navigate(['dashboard'], {queryParams: {redir_id: this.note_id}})
-        } else {
-          this.router.navigate(['dashboard'])
-        }
+    const req = await CapacitorHttp.post({
+      url: "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+      headers: {
+        "Content-Type": "multipart/related; boundary=ENDPART",
+        // @ts-ignore
+        "Authorization": `Bearer ${await this.userResource.signIn(false)}`
+      },
+      data: request_body.join("\n")
+    })
+
+    if (req.status == 200) {
+      this.note_id = req.data.id
+      console.log(this.note_id)
+
+      alert("Uploaded successfully!")
+      if (this.walkthrough_mode) {
+        this.router.navigate(['dashboard'], { queryParams: { redir_id: this.note_id } })
       } else {
-        alert(`Uploading failed (${req.status})`)
+        this.router.navigate(['dashboard'])
       }
+    } else {
+      alert(`Uploading failed (${req.status})`)
+    }
 
   }
 
@@ -312,12 +393,12 @@ export class DocsEditPage implements OnInit {
     if (document.queryCommandState(cmd)) {
       document.execCommand(cmd, false, "false")
     } else {
-      document.execCommand(cmd, false,"true")
+      document.execCommand(cmd, false, "true")
     }
 
     this.lastCmdStates.set(cmd, document.queryCommandState(cmd))
     console.log(document.queryCommandState(cmd))
-    
+
   }
 
   RTEBlockFormatting(tag: string, event: Event | null) {
@@ -325,11 +406,11 @@ export class DocsEditPage implements OnInit {
       document.execCommand("formatBlock", false, "P")
       return
     }
-    
-    if (event!=null) {
+
+    if (event != null) {
       event.preventDefault()
     }
-    
+
     document.execCommand("formatBlock", false, tag)
   }
 
@@ -337,13 +418,13 @@ export class DocsEditPage implements OnInit {
     event.preventDefault()
 
     if (document.queryCommandState("insertOrderedList")) {
-      document.execCommand("insertOrderedList",false,"false")
-      
-      this.lastCmdStates.set("insertOrderedList",false)
+      document.execCommand("insertOrderedList", false, "false")
+
+      this.lastCmdStates.set("insertOrderedList", false)
 
     } else if (document.queryCommandState("insertUnorderedList")) {
-      document.execCommand("insertUnorderedList",false,"false")
-      this.lastCmdStates.set("insertUnorderedList",false)
+      document.execCommand("insertUnorderedList", false, "false")
+      this.lastCmdStates.set("insertUnorderedList", false)
     }
 
     let cb = document.createElement("input")
@@ -355,17 +436,24 @@ export class DocsEditPage implements OnInit {
     event.preventDefault()
   }
 
+  RTEUpdateWordCounter() {
+    this.charCount = this.rte.nativeElement.innerText.length
+  }
+
   RTEUpdateEditor() {
     if (this.newEditor) {
       this.RTEInitEditor()
       this.newEditor = false;
     }
-    
-    this.lastCmdStates.forEach( (val, key) => {
+
+    this.lastCmdStates.forEach((val, key) => {
       if (document.queryCommandState(key) != val)
-      document.execCommand(key, false, val.toString())
-      
+        document.execCommand(key, false, val.toString())
+
     });
+
+    // update word counter
+    this.RTEUpdateWordCounter()
 
   }
 
@@ -389,18 +477,18 @@ export class DocsEditPage implements OnInit {
     event.preventDefault()
     let btn = this.highlight.nativeElement
     if (btn.getAttribute("activated") == "false") {
-      btn.setAttribute("activated","true")
+      btn.setAttribute("activated", "true")
     } else {
-      btn.setAttribute("activated","false")
-      document.execCommand("hiliteColor",false,"ffffff")
+      btn.setAttribute("activated", "false")
+      document.execCommand("hiliteColor", false, "ffffff")
 
 
       // de-highlight selected text
-    
+
       let sel = document.getSelection()?.toString()
       // @ts-ignore
       if (sel.length != 0 && sel.toString() != undefined) {
-        this.note_keywords.forEach( (v1, _) => {
+        this.note_keywords.forEach((v1, _) => {
           // @ts-ignore
           if (sel?.includes(v1) || v1.includes(sel)) {
             this.note_keywords.delete(v1)
@@ -409,13 +497,13 @@ export class DocsEditPage implements OnInit {
       }
 
     }
-    
+
   }
 
   RTEHighlight() {
     let btn = this.highlight.nativeElement
     if (btn.getAttribute("activated") == "true") {
-      document.execCommand("hiliteColor",false,"ffc701")
+      document.execCommand("hiliteColor", false, "ffc701")
 
       console.log(this.note_keywords)
 
@@ -423,16 +511,16 @@ export class DocsEditPage implements OnInit {
       if (document.getSelection()?.toString() != undefined) {
         let sel = document.getSelection()?.toString()
 
-      if (sel != undefined && sel.length > 0) {
+        if (sel != undefined && sel.length > 0) {
 
-        this.note_keywords.add(sel.trim())
+          this.note_keywords.add(sel.trim())
+        }
       }
-      }
-      
+
     }
   }
 
-  noteGeneratorModalChangeLang(event:any) {
+  noteGeneratorModalChangeLang(event: any) {
     this.noteGeneratorModalLang = event.detail.value;
   }
 
@@ -443,7 +531,7 @@ export class DocsEditPage implements OnInit {
     let r = await CapacitorHttp.post(
       {
         url: `${environment.BACKEND_LOC}/llmGenerateText`,
-        data: {"prompt": this.noteGeneratorModalPrompt, "lang": this.noteGeneratorModalLang},
+        data: { "prompt": this.noteGeneratorModalPrompt, "lang": this.noteGeneratorModalLang },
       }
     )
 
@@ -473,11 +561,11 @@ export class DocsEditPage implements OnInit {
     } else if (type == 'Auto-generated') {
       this.fileChooserOptions.dismiss()
       this.isNoteGeneratorModalOpened = true;
-    } 
+    }
     else {
       alert("feature not implemented")
     }
-    
+
   }
 
   async RTEHandleFileUpload(event: Event | any) {
@@ -490,7 +578,7 @@ export class DocsEditPage implements OnInit {
       l.dismiss()
     }
 
-    
+
   }
 
   async _handleFileUpload(event: Event | any) {
@@ -517,23 +605,23 @@ export class DocsEditPage implements OnInit {
       // Insert documents
       // let uploadQueue: Map<string, any> = new Map<string, any>()
 
-        for (let i = 0; i < files.length; i++) {
-          if (files[i].type.startsWith('text')) {
-            // If plaintext file, load its content
-            this.rte.nativeElement.insertAdjacentText('beforeend', await files[i].text())
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].type.startsWith('text')) {
+          // If plaintext file, load its content
+          this.rte.nativeElement.insertAdjacentText('beforeend', await files[i].text())
 
-          } else {
-            // If non-plaintext file, queue it for conversion
+        } else {
+          // If non-plaintext file, queue it for conversion
 
-            upload_form.append(`upload_${uploadCnt}`, files[i].slice(), files[i].name)
-            uploadCnt+=1
-          }
+          upload_form.append(`upload_${uploadCnt}`, files[i].slice(), files[i].name)
+          uploadCnt += 1
         }
+      }
     }
 
     if (uploadCnt != 0) {
 
-    
+
       upload_form.append('uploads', uploadCnt.toString())
 
       // Upload non-plaintext files for conversion
@@ -553,24 +641,26 @@ export class DocsEditPage implements OnInit {
 
       if (res.status == 200) {
         for (let i = 0; i < res.data.length; i++) {
-          
+
           this.rte.nativeElement.insertAdjacentHTML('beforeend', res.data[i]['content'])
-          
+
         }
       } else {
         alert(`${this.translate.instant('fileConvertErr')} (${res.status})`)
       }
 
-  }
+    }
     // Insert parsed text into editor
     this.fileChooserOptions.dismiss()
     this.rte.nativeElement.focus()
-    
+
     // document.execCommand("insertText", false, content.join("\n\n"))
     document.getSelection()?.collapseToEnd()
 
-  }
+    this.RTEUpdateWordCounter()
 
   }
 
-  
+}
+
+

@@ -100,6 +100,15 @@
     "cancel": "Cancel",
 
     "save": "Save",
-    "noteDeletionConfirm": "Delete this item?"
+    "noteDeletionConfirm": "Delete this item?",
+
+    "editorWelcomeTitle": "Welcome to the editor!",
+    "editorWelcome1": "To make the most out of your study sessions:",
+    "editorWelcome2": "Mark key phrases with the <em>Highlight</em> feature.",
+    "editorWelcome3": "Split your text up with <em>Headers (H1, H2)</em>",
+    "editorWelcome4": "Avoid using excessively long text (5000 chars max.)",
+
+
+    "charLimitErr": "Character limit reached! Please shorten your text"
 
 }

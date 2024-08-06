@@ -35,7 +35,7 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular({mode: 'md'}),
+    provideIonicAngular({mode: 'md', innerHTMLTemplatesEnabled: true}),
     provideRouter(routes),
     provideHttpClient(),
     provideOAuthClient(),

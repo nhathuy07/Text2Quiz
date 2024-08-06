@@ -17,7 +17,7 @@
 
 
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" (mousedown)="RTEUpdateWordCounter()">
   <div class="foreground">
   <ion-header collapse="condense">
     <ion-toolbar>
@@ -26,7 +26,7 @@
     
     
   </ion-header>
-  <div style="display: flex; flex-direction: column; height: 90vh;">
+  <div style="display: flex; flex-direction: column; height: 90vh;" (click)="RTEUpdateWordCounter()">
       <ion-card style="box-shadow: none; padding: 0px; padding-top: 5px;">
         <ion-card-content style="padding: 0px;">
         
@@ -131,13 +131,24 @@
       </div>
 
       <!-- The RTE itself -->
-      <div (touchend)="RTEHighlight()" (mouseup) = "RTEHighlight()" (click)="RTEUpdateEditor()" #rte autofocus contenteditable tappable id="rte" style="flex-grow: 1; max-height: calc(100% - 200px ); border-radius: 5px; border-width: 1px; border-color: #a5a5a5; border-style: solid;  margin: 10px; margin-top:0px; padding:5px; outline-width: 2px; outline-color: #a7a7a7; overflow-y: scroll;"></div>
+      <div (touchend)="RTEHighlight()" (mouseup) = "RTEHighlight()" (click)="RTEUpdateEditor()" (paste)="RTEHandlePaste($event)" #rte autofocus contenteditable tappable id="rte" style="flex-grow: 1; max-height: calc(100% - 200px ); border-radius: 5px; border-width: 1px; border-color: #a5a5a5; border-style: solid;  margin: 10px; margin-top:0px; padding:5px; outline-width: 2px; outline-color: #a7a7a7; overflow-y: scroll;"></div>
 
       <!-- Highlighted keywords -->
         
       <ion-card style="box-shadow: none;">
-        <ion-card-subtitle>{{'keywordsLabel' | translate}}</ion-card-subtitle>
-        <ion-text style="font-weight: bold; color: rgb(115, 108, 253); max-height: 42px; overflow-y: scroll;">{{returnSerializedKeywords()}}</ion-text>
+        <ion-grid style="padding: 0px;">
+          <ion-row style="padding: 0px;">
+            <ion-col style="padding: 0px;">
+              <ion-card-subtitle>{{'keywordsLabel' | translate}}</ion-card-subtitle>
+            </ion-col>
+            <ion-col style="text-align: end;">
+              <ion-card-subtitle style="font-weight: bold" *ngIf="charCount<=maxCharCount">{{charCount}}/{{maxCharCount}}</ion-card-subtitle>
+              <ion-card-subtitle style="font-weight: bold; color: var(--ion-color-danger);" *ngIf="charCount>maxCharCount">{{charCount}}/{{maxCharCount}}</ion-card-subtitle>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        
+        <ion-text style="font-weight: bold; color: var(--ion-color-primary); max-height: 42px; overflow-y: scroll;">{{returnSerializedKeywords()}}</ion-text>
       </ion-card>
 
       <!-- Modal for inserting AI-generated note -->
@@ -159,6 +170,8 @@
     </div>
 
   </div>
+
+
 
 </ion-content>
 
