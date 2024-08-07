@@ -289,9 +289,15 @@ export class UserResourceService implements OnInit {
         },
       }
     )
-    // @ts-ignore
-    const dotlasts = flist.data.files.filter((v) => {return v.name.endsWith('.last') && v.name == `${name}.last`})
-    
+    let dotlasts = []
+    if (name.length == 0) {
+      // @ts-ignore
+      dotlasts = flist.data.files.filter((v) => {return v.name.endsWith('.last')})
+    } else {
+      // @ts-ignore
+      dotlasts = flist.data.files.filter((v) => {return v.name.endsWith('.last') && v.name == `${name}.last`})
+    }
+
     for (let i = 0; i < dotlasts.length; i++) {
       const res = await CapacitorHttp.get({
         url: `https://www.googleapis.com/drive/v3/files/${dotlasts[i].id}?alt=media`,
