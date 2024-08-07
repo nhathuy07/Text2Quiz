@@ -4,7 +4,7 @@
     "googleLogin": "Tiếp tục với Google",
     "revisionPrompt": "Chọn đáp án tốt nhất",
     "enterAnswerPrompt": "Nhập đáp án...",
-    "submitBtn": "Kiểm tra đáp án",
+    "submitBtn": "Nộp",
     "prevPage": "Trước",
     "exit1": "Thoát",
     "feedback": "Phản hồi",
@@ -12,7 +12,7 @@
     "reAttemptLabel": "đã thử lại",
     "weakSpotsLabel": "Điểm yếu",
     "noWeakSpots": "Không tìm thấy điểm yếu rõ rệt nào!",
-    "reviewWeakSpotsBtn": "Xem những phần chưa nắm vững",
+    "reviewWeakSpotsBtn": "Ôn lại điểm yếu",
     "finishBtn": "Hoàn thành!",
     "loadingMsg": "Vui lòng đợi...",
     "redirSuccess": "Đăng nhập thành công. Đang điều hướng...",
@@ -100,6 +100,7 @@
     "cancel": "Hủy",
     "save": "Lưu",
     "noteDeletionConfirm": "Xóa mục này?",
+    "noteDeletionNotif": "Đã xóa mục này.",
 
 
     "editorWelcomeTitle": "Chào mừng đến với trình biên tập!",

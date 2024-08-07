@@ -101,6 +101,7 @@
 
     "save": "Save",
     "noteDeletionConfirm": "Delete this item?",
+    "noteDeletionNotif": "File deleted.",
 
     "editorWelcomeTitle": "Welcome to the editor!",
     "editorWelcome1": "To make the most out of your study sessions:",

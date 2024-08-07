@@ -477,11 +477,36 @@ export class RevisionPage implements OnInit {
     )
     
     for (let i = 0; i < _r.data.questions.length; i++) {
+
+      let usr_prompt = prompt(_r.data.questions[i].prompt)
+      if (usr_prompt == null) {
+        confirm(`❌ ${this.translate.instant("wrong")}${_r.data.questions[i].keys[0]}`)
+        continue
+      }
       // @ts-ignore
-      if (prompt(_r.data.questions[i].prompt).toLowerCase() == _r.data.questions[i].keys[0].toLowerCase()) {
+      if (usr_prompt.toLowerCase() == _r.data.questions[i].keys[0].toLowerCase()) {
         confirm(`✅ ${this.translate.instant("correct1")}`)
       } else {
-        confirm(`❌ ${this.translate.instant("wrong")}${_r.data.questions[i].keys[0]}`)
+        if (_r.data.questions[i].keys[0].length == 1) {
+          confirm(`❌ ${this.translate.instant("wrong")}${_r.data.questions[i].keys[0]}`)
+        } else {
+
+          // Examine sentence similarity
+          let ret = await CapacitorHttp.post({
+            url: `${environment.BACKEND_LOC}/validateSimilarity`,
+            data: {
+              'lang': this.n_lang,
+              'sentences': [usr_prompt, this.questions[this.cur_state.id].keys.toString()]
+            }
+          })
+          if (ret.data.isSimilar == "True") {
+            confirm(`✅ ${this.translate.instant("partiallyCorrect")}`)
+          } else {
+            confirm(`❌ ${this.translate.instant("wrong")}${_r.data.questions[i].keys[0]}`)
+          }
+
+
+        }
       }
     }
 

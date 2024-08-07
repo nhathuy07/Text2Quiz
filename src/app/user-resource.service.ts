@@ -278,6 +278,31 @@ export class UserResourceService implements OnInit {
     return r.data
   }
 
+  public async getRevisionResult(name: string="") {
+    const flist = await CapacitorHttp.get(
+      {
+        url: `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder`,
+        headers: {
+          "Content-Type": "multipart/related; boundary=ENDPART",
+          // @ts-ignore
+          "Authorization": `Bearer ${await this.signIn(false)}`
+        },
+      }
+    )
+    // @ts-ignore
+    const dotlasts = flist.data.files.filter((v) => {return v.name.endsWith('.last') && v.name == `${name}.last`})
+    
+    for (let i = 0; i < dotlasts.length; i++) {
+      const res = await CapacitorHttp.get({
+        url: `https://www.googleapis.com/drive/v3/files/${dotlasts[i].id}?alt=media`,
+        headers: {'Authorization': `Bearer ${await this.signIn(false)}`}
+      })
+      console.log(res.data)
+    }
+  }
+
+  
+
   public async logRevisionResult(title:string, summary: RevisionSummary):Promise<boolean> {
     
     // check if result already exists

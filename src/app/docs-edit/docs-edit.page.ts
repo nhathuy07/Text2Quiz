@@ -369,14 +369,14 @@ export class DocsEditPage implements OnInit {
       this.note_id = req.data.id
       console.log(this.note_id)
 
-      alert("Uploaded successfully!")
+      alert(this.translate.instant('uploadSuccess'))
       if (this.walkthrough_mode) {
         this.router.navigate(['dashboard'], { queryParams: { redir_id: this.note_id } })
       } else {
         this.router.navigate(['dashboard'])
       }
     } else {
-      alert(`Uploading failed (${req.status})`)
+      alert(`${this.translate.instant('uploadFailed')} (${req.status})`)
     }
 
   }

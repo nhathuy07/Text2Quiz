@@ -171,6 +171,8 @@ export class DashboardPage implements OnInit {
 
   async pageInit() {
     
+    // await this.userResource.getRevisionResult()
+
 
     this.username = await this.userResource.getLoggedInUserName()
     this.noteList = await this.userResource.filterNotesBySubject("*")
@@ -279,7 +281,7 @@ export class DashboardPage implements OnInit {
         headers: {'Authorization': `Bearer ${await this.userResource.signIn(false)}`}
       })
       if (r.status.toString().startsWith('2')) {
-        alert("File deleted.")
+        alert(this.translate.instant('noteDeletionNotif'))
         this.dismissNoteViewerModal()
         this.pageInit()
 
